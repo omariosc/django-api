@@ -1,0 +1,51 @@
+\RequirePackage[dvipsnames]{xcolor}
+\documentclass[tikz, border=1in]{standalone}
+\usepackage{tikz-uml}
+
+\title{Airline API Diagram}
+\author{Wassim Benimoussa}
+\date{March 2023}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+\begin{umlpackage}[x=25, y= -10, fill=Red!60]{Aviation Authority}
+\umlbasiccomponent[width=3cm]{GetFlights}
+\umlbasiccomponent[y=-2, width=3cm]{UpdateOnBookings}
+\umlbasiccomponent[y=-4, width=3cm]{UpdateNoSeats}
+\end{umlpackage}
+
+\begin{umlpackage}[x=12, y=-10, fill=Green!50]{Airline}
+\umlbasiccomponent[width=3cm]{AvailableFlight}
+\umlbasiccomponent[y = -2, width=3cm]{GetBookings}
+\umlbasiccomponent[y = -4,width=3cm]{UpdateFlightSeats}
+\end{umlpackage}
+
+\umlassemblyconnector[interface=POST, with port, name=RequestFlights]{GetFlights}{AvailableFlight}
+\umlassemblyconnector[interface=POST, with port, name=RequestBookings]{GetBookings}{UpdateOnBookings}
+\umlassemblyconnector[interface=POST, with port, name=RequestSeats]{UpdateNoSeats}{UpdateFlightSeats}
+
+\umlnote[x=18.5, y=-5, width=4cm]{RequestFlights-interface}{\textbf{REQUEST} \\
+EncodedFlightQuery: uint \break \\
+\textbf{RESPONSE} \\
+EncodedFlightsList: uint
+}
+
+\umlnote[x=17, y=-18, width=4cm]{RequestSeats-interface}{\textbf{REQUEST} \\
+EncodedNoSeats: uint \break \\
+\textbf{RESPONSE} \\
+EncodedFlightsSeats: uint
+}
+
+\umlnote[x=23, y=-18, width=4cm]{RequestBookings-interface}{\textbf{REQUEST} \\
+EncodedBooking: uint \\
+EncodedFlight:\\\break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: uint}
+
+\end{tikzpicture}
+
+\end{document}
