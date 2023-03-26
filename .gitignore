@@ -36,3 +36,5 @@ Thumbs.db
 nosetests.xml
 htmlcov/
 coverage_html_report/
+
+api/
