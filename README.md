@@ -39,3 +39,30 @@ This repository contains code for Coursework 2 of the COMP3011 Web Services & We
 ## API
 
 ![API](api.png)
+
+## Commands
+
+```bash
+pip install django
+sudo apt install python3-pip
+mkdir test
+cd test
+virtualenv venv
+sudo apt install python3-virtualenv
+virtualenv venv
+source venv/bin/activate
+django-admin.py startproject mysite
+test/venv django-admin.py startproject mysite
+test/venv/django-admin.py startproject mysite
+cd test/venv/django-admin.py
+cd test
+cd venv
+django-admin.py startproject mysite
+django-admin startproject mysite
+cd ../../
+cd mysite/
+python manage.py runserver
+python manage.py migrate
+runserver
+python manage.py runserver
+```
