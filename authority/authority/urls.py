@@ -1,4 +1,4 @@
-"""airline_authority URL Configuration
+"""authority URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -19,8 +19,6 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/get_flights/', views.get_flights, name='get_flights'),
-    path('api/update_on_bookings/', views.update_on_bookings,
-         name='update_on_bookings'),
-    path('api/update_no_seats/', views.update_no_seats, name='update_no_seats'),
+    path('api/flights/', views.flights, name='flights'),
+    path('api/bookings/', views.bookings, name='bookings'),
 ]
