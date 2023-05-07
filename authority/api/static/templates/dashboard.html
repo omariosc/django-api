@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+    <h1>Dashboard</h1>
+
+    <!-- Chart container -->
+    <div>
+      <h2>Number of passengers per airline today</h2>
+      <canvas id="passengersPerAirlineTodayChart"></canvas>
+    </div>
+
+    <!-- Add other chart containers here -->
+    <!-- Chart containers -->
+    <div>
+      <h2>Income per flight by airline</h2>
+      <canvas id="incomePerFlightByAirlineChart"></canvas>
+    </div>
+
+    <div>
+      <h2>Income per flight by airport</h2>
+      <canvas id="incomePerFlightByAirportChart"></canvas>
+    </div>
+
+    <div>
+      <h2>Income per flight by city</h2>
+      <canvas id="incomePerFlightByCityChart"></canvas>
+    </div>
+
+    <div>
+      <h2>Income per flight by country</h2>
+      <canvas id="incomePerFlightByCountryChart"></canvas>
+    </div>
+
+    <script src="{% static 'js/dashboard.js' %}"></script>
+  </body>
+</html>
