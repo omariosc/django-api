@@ -38,3 +38,6 @@ htmlcov/
 coverage_html_report/
 
 api/
+
+# whitelist authority/api/*
+!authority/api/
