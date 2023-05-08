@@ -8,7 +8,7 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
-    """ Backs up the database."""
+    """Backs up the database."""
 
     help = 'Backs up the database.'
 

@@ -6,10 +6,10 @@ This repository contains code for Coursework 2 of the COMP3011 Web Services & We
 
 ## Tasks
 
-- Database Fields
-- API Routes
-- Swagger
-- Dashboard
+- Comments
+- Documentation
+- Testing
+- Report
 
 ## Database
 

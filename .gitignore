@@ -37,6 +37,7 @@ nosetests.xml
 htmlcov/
 coverage_html_report/
 
+# env
 api/
 
 # whitelist authority/api/*
