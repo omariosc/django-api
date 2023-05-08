@@ -13,7 +13,7 @@ from .utilities import generate_booking_ref, get_param, validate_airline_code, v
 
 class AirlineViewSet(viewsets.GenericViewSet):
     """This class defines the viewset for the Airline endpoint."""
-    
+
     queryset = Airline.objects.all()
     serializer_class = AirlineSerializer
     filter_backends = [DjangoFilterBackend]
@@ -156,7 +156,7 @@ class AirlineViewSet(viewsets.GenericViewSet):
 
 class AirportViewSet(viewsets.GenericViewSet):
     """Viewset for the Airport model."""
-    
+
     queryset = Airport.objects.all()
     serializer_class = AirportSerializer
     filter_backends = [DjangoFilterBackend]
@@ -537,7 +537,7 @@ class BookingViewSet(viewsets.GenericViewSet):
         flight_code = get_param('flight', request)
         passport_number = get_param('passport_number', request)
 
-        flight = Flight.objects.filter(flight=flight_code).first()
+        flight = Flight.objects.filter(flight_code=flight_code).first()
         if not flight:
             return Response({"error": f'Flight \'{flight_code}\' not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -547,7 +547,7 @@ class BookingViewSet(viewsets.GenericViewSet):
         # Get the airline IP address
         flight_ip_address = flight.airline.ip
 
-        url = f'http://{flight_ip_address}/api/flights'
+        url = f'http://{flight_ip_address}/api/bookings'
 
         # Make the request data
         data = {
@@ -565,6 +565,10 @@ class BookingViewSet(viewsets.GenericViewSet):
             passport_number=passport_number,
             flight=flight
         )
+
+        # Decrement available seat
+        flight.available_seats -= 1
+        flight.save()
 
         serializer = self.get_serializer(booking)
 
@@ -632,7 +636,7 @@ class BookingViewSet(viewsets.GenericViewSet):
         # Get the airline IP address
         flight_ip_address = flight.airline.ip
 
-        url = f'http://{flight_ip_address}/api/flights/?booking_ref={booking_ref}'
+        url = f'http://{flight_ip_address}/api/bookings/?booking_ref={booking_ref}'
 
         # Make the request data
         data = {
