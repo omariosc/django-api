@@ -334,6 +334,7 @@ class FlightViewSet(viewsets.GenericViewSet):
         - `/api/flights/?departure_airport=LAX&destination_airport=JFK`
         - `/api/flights/?airline=AA&base_price_min=100&base_price_max=300`
         - `/api/flights/?departure_datetime_min=2023-05-01T00:00:00Z&departure_datetime_max=2023-05-31T23:59:59Z`
+        - `/api/flights/?departure_datetime_min=2023-05-09&arrival_datetime_max=2023-05-14`
 
         The filters allow users to search for flights within a range of values for various parameters
         such as departure datetime, arrival datetime, duration time, base price, total seats,
