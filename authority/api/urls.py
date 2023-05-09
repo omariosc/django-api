@@ -2,6 +2,8 @@
 
 from django.urls import path, include
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 from .views import AirlineViewSet, AirportViewSet, FlightViewSet, BookingViewSet
 
@@ -30,15 +32,23 @@ urlpatterns = [
 
     path('api/airlines/', AirlineViewSet.as_view({
         'get': 'get_airlines',
-        'post': 'create_airline',
-        'patch': 'modify_airline',
-        'delete': 'delete_airline',
     }), name='airlines'),
 
     path('api/airports/', AirportViewSet.as_view({
         'get': 'get_airports',
-        'post': 'create_airport',
-        'patch': 'modify_airport',
-        'delete': 'delete_airport',
     }), name='airports'),
-]
+
+    path('api/cities/', AirportViewSet.as_view({
+        'get': 'get_airports',
+    }), name='airports'),
+
+    path('api/countries/', AirportViewSet.as_view({
+        'get': 'get_airports',
+    }), name='airports'),
+
+    path('api/continents/', AirportViewSet.as_view({
+        'get': 'get_airports',
+    }), name='airports'),
+
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

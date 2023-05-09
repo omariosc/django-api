@@ -7,15 +7,16 @@ from datetime import datetime, timedelta
 import django
 from django.utils.timezone import make_aware
 from django.core.management.base import BaseCommand
-from api.models import Airport, Airline, Flight, Booking
-from api.utilities import generate_booking_ref
+from api.models import City, Country, Airport, Airline, Flight, Booking
+
+# Set seed for random
+random.seed(42)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
 django.setup()
 
 AIRPORTS_FILE = 'api/static/data/airports.csv'
-AIRPORTS_FILE = 'api/static/data/temp.csv'
 NUM_FLIGHTS = 10
 NUM_BOOKINGS_PER_FLIGHT = 10
 
@@ -27,6 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Calls the functions to populate the database."""
+
         self.populate_airlines()
         self.populate_airports(AIRPORTS_FILE)
         self.generate_flights(NUM_FLIGHTS)  # Also generates bookings
@@ -35,14 +37,10 @@ class Command(BaseCommand):
         """Populates the airlines table."""
 
         airlines = {
-            'SL': {'code': 'SL', 'name': 'SkyLink', 'country': 'USA',
-                   'phone': '+1-800-123-4567', 'ip': 'sc20asb.pythonanywhere.com'},
-            'FA': {'code': 'FA', 'name': 'FlyAmmar', 'country': 'Syria',
-                   'phone': '+963-555-123456', 'ip': 'sc20amb.pythonanywhere.com'},
-            'AS': {'code': 'AS', 'name': 'Airsalka', 'country': 'Syria',
-                   'phone': '+963-555-654321', 'ip': 'sc20s2r.pythonanywhere.com'},
-            'AA': {'code': 'AA', 'name': 'API Airlines', 'country': 'United Kingdom',
-                   'phone': '+44-800-987-6543', 'ip': 'sc20cwb1.pythonanywhere.com'}
+            'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'sc20asb.pythonanywhere.com'},
+            'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'sc20amb.pythonanywhere.com'},
+            'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
+            'AA': {'code': 'AA', 'name': 'API Airlines', 'ip': 'sc20cwb1.pythonanywhere.com'}
         }
 
         for airline in airlines.values():
@@ -66,37 +64,54 @@ class Command(BaseCommand):
         missing = 0
         with open(file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
-            # Only do first 100 lines
-            reader = list(reader)[:100]
-            for row in reader:
-                if not row['id']:
+            airports = random.sample(list(reader), 100)
+            for row in airports:
+                if not row['ident']:
                     missing += 1
                     self.stdout.write(self.style.WARNING(
                         f'Airport \'{row["name"]}\' missing id. Skipping...'))
                     continue
+
                 # If airport already exists by ident or name, skip it
                 if Airport.objects.filter(ident=row['ident']).exists() or Airport.objects.filter(name=row['name']).exists():
                     self.stdout.write(self.style.WARNING(
                         f'Airport \'{row["name"]}\' already exists. Skipping...'))
                     continue
+
+                # If no country exists, create it
+                if not Country.objects.filter(name=row['country']).exists():
+                    country = Country.objects.create(
+                        name=row['country'], continent=row['continent'])
+                else:
+                    country = Country.objects.get(name=row['country'])
+
+                # If city is blank, use the country name as the city name
+                if not row['city']:
+                    # If the city exists as a country then skip it
+                    if Country.objects.filter(name=row['country']).exists():
+                        continue
+                    row['city'] = row['country']
+
+                # If no city exists, create it
+                if not City.objects.filter(name=row['city']).exists():
+                    city = City.objects.create(
+                        name=row['city'], country=country)
+
                 Airport.objects.create(
                     ident=row['ident'],
                     name=row['name'],
-                    city=row['municipality'],
-                    country=row['iso_country'],
-                    iso_country=row['iso_country'],
-                    iso_region=row['iso_region'],
-                    municipality=row['municipality'],
+                    city=city,
+                    region=row['region'],
                     size_type=row['size_type'],
                     latitude=row['latitude'],
                     longitude=row['longitude'],
                     elevation=row['elevation'],
-                    continent=row['continent'],
-                    link=row['link']
                 )
+
                 success += 1
                 self.stdout.write(self.style.SUCCESS(
                     f'Airport \'{row["name"]}\' added successfully!'))
+
         self.stdout.write(self.style.SUCCESS(
             f'{success} airports added successfully!'))
         if missing:
@@ -130,14 +145,14 @@ class Command(BaseCommand):
                 timedelta(minutes=random.randint(60, 1200))
             duration = arrival_datetime - departure_datetime
             base_price = round(random.uniform(10, 10000), 2)
-            total_seats = random.randint(10, 500)
-            available_seats = random.randint(0, total_seats)
+            total_seats = random.randint(100, 250)
+            available_seats = random.randint(10, total_seats)
             airline = random.choice(airlines)
 
             flight = Flight.objects.create(
+                flight_code=flight_code,
                 departure_airport=departure_airport,
                 destination_airport=destination_airport,
-                flight_code=flight_code,
                 departure_datetime=departure_datetime,
                 arrival_datetime=arrival_datetime,
                 duration_time=duration,
@@ -148,10 +163,9 @@ class Command(BaseCommand):
             )
 
             # Generate bookings based on random number smaller than available seats
-            self.generate_bookings(
-                flight, random.randint(0, NUM_BOOKINGS_PER_FLIGHT))
+            self.generate_bookings(flight)
 
-    def generate_bookings(self, flight, num_bookings):
+    def generate_bookings(self, flight):
         """Generates random bookings.
 
         Args:
@@ -161,7 +175,7 @@ class Command(BaseCommand):
 
         created_bookings = 0
 
-        for _ in range(num_bookings):
+        for _ in range(NUM_BOOKINGS_PER_FLIGHT):
             # If no more seats available, stop generating bookings
             if flight.available_seats == 0:
                 break
@@ -170,7 +184,6 @@ class Command(BaseCommand):
             flight.save()
 
             Booking.objects.create(
-                booking_ref=generate_booking_ref(),
                 passport_number=random.randint(10000000, 99999999),
                 flight=flight
             )

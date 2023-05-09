@@ -22,15 +22,37 @@ class BookingSerializer(serializers.ModelSerializer):
 
         model = Booking
         fields = '__all__'
+        read_only_fields = ('booking_ref',)
+
+    def create(self, validated_data):
+        """Create a new booking.
+
+        Args:
+            validated_data (dict): The validated data.
+
+        Returns:
+            Booking: The created booking.
+        """
+
+        validated_data['booking_ref'] = Booking.generate_booking_ref()
+        return super().create(validated_data)
 
 
 class AirlineSerializer(serializers.ModelSerializer):
+    """Serializes the Airline model."""
+
     class Meta:
+        """Meta class for the AirlineSerializer."""
+
         model = Airline
         fields = '__all__'
 
 
 class AirportSerializer(serializers.ModelSerializer):
+    """Serializes the Airport model."""
+
     class Meta:
+        """Meta class for the AirportSerializer."""
+
         model = Airport
         fields = '__all__'

@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Airline, Airport, Flight, Booking
 from .filters import AirportFilter, FlightFilter
 from .serializers import AirlineSerializer, AirportSerializer, FlightSerializer, BookingSerializer
-from .utilities import generate_booking_ref, get_param, validate_airline_code, validate_airline_name, validate_phone
+from .utils import get_param
 
 
 class AirlineViewSet(viewsets.GenericViewSet):
@@ -51,108 +51,6 @@ class AirlineViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @ action(detail=False, methods=['post'], serializer_class=AirlineSerializer)
-    def create_airline(self, request):
-        """
-        Creates a new airline.
-
-        This version of the code breaks down the validation steps into separate functions for better readability and modularity. The main function now calls these validation functions and proceeds with the creation of the airline only if there are no errors.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-        """
-
-        if not request.data:
-            return Response({"error": "Please provide the airline details"},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        airline_code = get_param('code', request)
-        airline_name = get_param('name', request)
-        phone = get_param('phone', request)
-        ip_address = get_param('ip', request)
-
-        error = validate_airline_code(airline_code) or \
-            validate_airline_name(airline_name) or \
-            validate_phone(phone)
-
-        if error:
-            return Response({"error": error}, status=status.HTTP_400_BAD_REQUEST)
-
-        if Airline.objects.filter(code=airline_code).exists():
-            return Response({"error": f'Airline with code {airline_code} already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if Airline.objects.filter(name=airline_name).exists():
-            return Response({"error": f'Airline with name {airline_name} already exists'}, status=status.HTTP_400_BAD_REQUEST)
-
-        if not phone and not ip_address:
-            return Response({"error": "Phone and ip address are required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = AirlineSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @ action(detail=False, methods=['patch'], serializer_class=AirlineSerializer)
-    def modify_airline(self, request):
-        """Modifies an existing airline.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-        """
-
-        airline_code = get_param('code', request)
-
-        if not airline_code:
-            return Response(
-                {"error": "Airline code is required"},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            airline = Airline.objects.get(code=airline_code)
-        except Airline.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AirlineSerializer(
-            airline, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @ action(detail=False, methods=['delete'], serializer_class=AirlineSerializer)
-    def delete_airline(self, request):
-        """Deletes an existing airline.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-        """
-
-        airline_code = get_param('code', request)
-
-        if not airline_code:
-            return Response(
-                {"error": "Airline code is required"},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            airline = Airline.objects.get(code=airline_code)
-        except Airline.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        airline.delete()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class AirportViewSet(viewsets.GenericViewSet):
     """Viewset for the Airport model."""
@@ -171,10 +69,8 @@ class AirportViewSet(viewsets.GenericViewSet):
         Users can filter airports based on query parameters. For example:
 
         - `/api/airports/?city=New York`
-        - `/api/airports/?country=United States`
-        - `/api/airports/?iso_country=US`
-        - `/api/airports/?iso_region=US-NY`
-        - `/api/airports/?municipality=Los Angeles`
+        - `/api/airports/?country=US`
+        - `/api/airports/?region=US-NY`
         - `/api/airports/?type=large_airport`
         - `/api/airports/?latitude_min=40&latitude_max=45`
         - `/api/airports/?longitude_min=-80&longitude_max=-70`
@@ -206,17 +102,17 @@ class AirportViewSet(viewsets.GenericViewSet):
             try:
                 airport = Airport.objects.get(ident=ident)
             except Airport.DoesNotExist:
-                return Response({'error': 'Airport not found.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with ident {ident} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
         if name:
             # If an ident is provided, return the airport with that ident
             try:
                 airport = Airport.objects.get(name=name)
             except Airport.DoesNotExist:
-                return Response({'error': 'Airport not found.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with name {name} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
         # We want to allow the user to get airports based on a query parameter
-        # They can choose a specific city, country, iso_country, iso_region, municipality, type, latitude, longitude, elevation, continent
+        # They can choose a specific city, country, region, type, latitude, longitude, elevation, continent
         # They can also choose a range of values for the above parameters
         # including latitude, longitude, and elevation
         # We can use the django filter package to do this
@@ -229,90 +125,6 @@ class AirportViewSet(viewsets.GenericViewSet):
         serializer = AirportSerializer(airports, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @ action(detail=False, methods=['get'], serializer_class=AirportSerializer)
-    def create_airport(self, request):
-        """Creates a new airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-        """
-
-        if not request.data:
-            return Response({"error": "Please provide the airport details"},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        ident = get_param('ident', request)
-
-        if ident and Airport.objects.filter(ident=ident).exists():
-            return Response({"error": f'Airport with ident {ident} already exists'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = AirportSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @ action(detail=False, methods=['get'], serializer_class=AirportSerializer)
-    def modify_airport(self, request):
-        """Modifies an existing airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-
-        """
-
-        ident = get_param('ident', request)
-
-        if not ident:
-            return Response(
-                {"error": "Airport ident is required"},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            airport = Airport.objects.get(ident=ident)
-        except Airport.DoesNotExist:
-            return Response({"error": f'Airport with ident {ident} does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = AirportSerializer(
-            airport, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @ action(detail=False, methods=['get'], serializer_class=AirportSerializer)
-    def delete_airport(self, request):
-        """Deletes an existing airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-        """
-
-        ident = get_param('ident', request)
-
-        if not ident:
-            return Response(
-                {"error": "Airport ident is required"},
-                status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            airport = Airport.objects.get(ident=ident)
-        except Airport.DoesNotExist:
-            return Response({"error": f'Airport with ident {ident} does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-        airport.delete()
-
-        return Response({"message": f'Airport with ident {ident} deleted'}, status=status.HTTP_200_OK)
 
 
 class FlightViewSet(viewsets.GenericViewSet):
@@ -367,6 +179,7 @@ class FlightViewSet(viewsets.GenericViewSet):
             return Response(
                 {"detail": "No flights available."},
                 status=status.HTTP_204_NO_CONTENT)
+
         serializer = self.get_serializer(flights, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -400,6 +213,11 @@ class FlightViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        if serializer.errors:
+            return Response(
+                {"error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -535,41 +353,26 @@ class BookingViewSet(viewsets.GenericViewSet):
             Response: The response object.
         """
 
+        booking_ref = get_param('booking_ref', request)
         flight_code = get_param('flight', request)
         passport_number = get_param('passport_number', request)
+
+        # If booking_ref is provided, check if it exists
+        # If it does, return an error
+        if booking_ref:
+            booking = Booking.objects.filter(booking_ref=booking_ref).first()
+            if booking:
+                return Response({"error": f'Booking \'{booking_ref}\' already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
         flight = Flight.objects.filter(flight_code=flight_code).first()
         if not flight:
             return Response({"error": f'Flight \'{flight_code}\' not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Generate booking reference
-        booking_ref = generate_booking_ref()
-
-        # Get the airline IP address
-        flight_ip_address = flight.airline.ip
-
-        url = f'http://{flight_ip_address}/api/bookings'
-
-        # Make the request data
-        data = {
-            'booking_ref': booking_ref,
-            'passport_number': passport_number,
-            'flight': flight_code
-        }
-
-        # Make the request
-        requests.post(url, data=data)
-
         # Save the booking
         booking = Booking.objects.create(
-            booking_ref=booking_ref,
             passport_number=passport_number,
             flight=flight
         )
-
-        # Decrement available seat
-        flight.available_seats -= 1
-        flight.save()
 
         serializer = self.get_serializer(booking)
 

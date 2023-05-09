@@ -6,9 +6,13 @@ This repository contains code for Coursework 2 of the COMP3011 Web Services & We
 
 ## Tasks
 
+- Endpoints
+- Filters
 - Comments
 - Documentation
 - Testing
+- readme.txt
+- README.md
 - Report
 
 ## Database
