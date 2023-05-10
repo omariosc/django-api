@@ -170,7 +170,7 @@ class Booking(models.Model):
             # Get the airline IP address
             flight_ip_address = self.flight.airline.ip
 
-            url = f'http://{flight_ip_address}/api/bookings'
+            url = f'http://{flight_ip_address}/api/bookings/'
 
             # Make the request data
             data = {

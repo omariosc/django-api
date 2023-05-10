@@ -64,8 +64,10 @@ class Command(BaseCommand):
         missing = 0
         with open(file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
-            airports = random.sample(list(reader), 100)
-            for row in airports:
+            for i, row in enumerate(reader):
+                # Do only 100 airports, every 700th airport
+                if i % 700 != 0:
+                    continue            
                 if not row['ident']:
                     missing += 1
                     self.stdout.write(self.style.WARNING(

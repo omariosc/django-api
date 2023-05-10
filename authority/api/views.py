@@ -91,8 +91,10 @@ class AirportViewSet(viewsets.GenericViewSet):
             # If does not exist, return 404
             try:
                 airport = Airport.objects.get(ident=ident, name=name)
+                # Return the airport
+                return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with ident {ident} and name {name} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
             # Serialize the data
             serializer = AirportSerializer(airport)
@@ -102,6 +104,7 @@ class AirportViewSet(viewsets.GenericViewSet):
             # If an ident is provided, return the airport with that ident
             try:
                 airport = Airport.objects.get(ident=ident)
+                return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
                 return Response({'error': f'Airport with ident {ident} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -109,6 +112,7 @@ class AirportViewSet(viewsets.GenericViewSet):
             # If an ident is provided, return the airport with that ident
             try:
                 airport = Airport.objects.get(name=name)
+                return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
                 return Response({'error': f'Airport with name {name} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -122,9 +126,13 @@ class AirportViewSet(viewsets.GenericViewSet):
         # Filter the airports based on the query parameters
         airports = AirportFilter(request.GET, queryset=airports).qs
 
+        # If no airports are found, return 404
+        if not airports:
+            return Response({'error': 'No airports found.'}, status=status.HTTP_404_NOT_FOUND)
+        
         # Serialize the data
         serializer = AirportSerializer(airports, many=True)
-
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
