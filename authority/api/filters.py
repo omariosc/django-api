@@ -1,8 +1,7 @@
 """This file contains the filters for the Airport and Flight models."""
 
 import django_filters
-from django.db.models import F
-from api.models import Airport, Flight
+from .models import Airport, Flight
 
 
 class AirportFilter(django_filters.FilterSet):
@@ -30,26 +29,6 @@ class AirportFilter(django_filters.FilterSet):
         field_name="elevation", lookup_expr="lte")
     continent = django_filters.CharFilter(
         field_name="city__country__continent", lookup_expr="iexact")
-
-    def __init__(self, *args, **kwargs):
-        """
-        Update the extra attribute of the filters to include the
-        to_field_name attribute. This is needed to filter on the
-        related model's field instead of the related model's primary
-        key.
-        """
-
-        super().__init__(*args, **kwargs)
-        self.filters['city'].extra.update(
-            {'to_field_name': 'name'})
-        self.filters['country'].extra.update(
-            {'to_field_name': 'name'})
-        self.filters['region'].extra.update(
-            {'to_field_name': 'region'})
-        self.filters['size_type'].extra.update(
-            {'to_field_name': 'size_type'})
-        self.filters['continent'].extra.update(
-            {'to_field_name': 'continent'})
 
     class Meta:
         """Meta class for the AirportFilter class."""
@@ -103,13 +82,13 @@ class FlightFilter(django_filters.FilterSet):
     destination_airport = django_filters.CharFilter(
         field_name="destination_airport__ident", lookup_expr='iexact')
     departure_city = django_filters.CharFilter(
-        field_name="departure_airport__city", lookup_expr='iexact')
+        field_name="departure_airport__city__name", lookup_expr='iexact')
     destination_city = django_filters.CharFilter(
-        field_name="destination_airport__city", lookup_expr='iexact')
+        field_name="destination_airport__city__name", lookup_expr='iexact')
     departure_country = django_filters.CharFilter(
-        field_name="departure_airport__country", lookup_expr='iexact')
+        field_name="departure_airport__city__country__name", lookup_expr='iexact')
     destination_country = django_filters.CharFilter(
-        field_name="destination_airport__country", lookup_expr='iexact')
+        field_name="destination_airport__city__country__name", lookup_expr='icontains')
 
     class Meta:
         """Meta class for the FlightFilter class."""

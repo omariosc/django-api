@@ -5,8 +5,8 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from .views import AirlineViewSet, AirportViewSet, FlightViewSet, BookingViewSet
-
+from .views import AirlineViewSet, AirportViewSet, \
+    FlightViewSet, BookingViewSet, CityViewSet, CountryViewSet
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
@@ -38,17 +38,13 @@ urlpatterns = [
         'get': 'get_airports',
     }), name='airports'),
 
-    path('api/cities/', AirportViewSet.as_view({
-        'get': 'get_airports',
-    }), name='airports'),
+    path('api/cities/', CityViewSet.as_view({
+        'get': 'get_cities',
+    }), name='cities'),
 
-    path('api/countries/', AirportViewSet.as_view({
-        'get': 'get_airports',
-    }), name='airports'),
-
-    path('api/continents/', AirportViewSet.as_view({
-        'get': 'get_airports',
-    }), name='airports'),
+    path('api/countries/', CountryViewSet.as_view({
+        'get': 'get_countries',
+    }), name='countries'),
 
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -17,8 +17,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 django.setup()
 
 AIRPORTS_FILE = 'api/static/data/airports.csv'
-NUM_FLIGHTS = 10
-NUM_BOOKINGS_PER_FLIGHT = 10
+NUM_FLIGHTS = 3
+NUM_BOOKINGS_PER_FLIGHT = 3
 
 
 class Command(BaseCommand):
@@ -73,7 +73,8 @@ class Command(BaseCommand):
                     continue
 
                 # If airport already exists by ident or name, skip it
-                if Airport.objects.filter(ident=row['ident']).exists() or Airport.objects.filter(name=row['name']).exists():
+                if Airport.objects.filter(ident=row['ident']).exists() \
+                        or Airport.objects.filter(name=row['name']).exists():
                     self.stdout.write(self.style.WARNING(
                         f'Airport \'{row["name"]}\' already exists. Skipping...'))
                     continue

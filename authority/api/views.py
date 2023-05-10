@@ -5,9 +5,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Airline, Airport, Flight, Booking
+from .models import Airline, Airport, Flight, Booking, City, Country
 from .filters import AirportFilter, FlightFilter
-from .serializers import AirlineSerializer, AirportSerializer, FlightSerializer, BookingSerializer
+from .serializers import AirlineSerializer, AirportSerializer, \
+    FlightSerializer, BookingSerializer, CitySerializer, CountrySerializer
 from .utils import get_param
 
 
@@ -174,7 +175,10 @@ class FlightViewSet(viewsets.GenericViewSet):
         # Get filtered flights or all flights if no filter is applied
         flight_filter = FlightFilter(
             request.GET, queryset=Flight.objects.all())
-        flights = flight_filter.qs
+
+        # Do not show flights with 0 available seats
+        flights = flight_filter.qs.filter(available_seats__gt=0)
+
         if not flights.exists():
             return Response(
                 {"detail": "No flights available."},
@@ -368,6 +372,13 @@ class BookingViewSet(viewsets.GenericViewSet):
         if not flight:
             return Response({"error": f'Flight \'{flight_code}\' not found'}, status=status.HTTP_404_NOT_FOUND)
 
+        # If passport number and flight is provided and a booking exists with same values then error
+        if passport_number:
+            booking = Booking.objects.filter(
+                flight=flight, passport_number=passport_number).first()
+            if booking:
+                return Response({"error": f'Booking already exists with flight \'{flight_code}\' and passport number \'{passport_number}\''}, status=status.HTTP_400_BAD_REQUEST)
+        
         # Save the booking
         booking = Booking.objects.create(
             passport_number=passport_number,
@@ -448,8 +459,98 @@ class BookingViewSet(viewsets.GenericViewSet):
         }
 
         # Make the request
-        requests.delete(url, data=data)
+        requests.delete(url, data=data, timeout=5)
 
         booking.delete()
 
         return Response({"detail": f'Booking \'{booking_ref}\' deleted'}, status=status.HTTP_200_OK)
+
+
+class CityViewSet(viewsets.GenericViewSet):
+    """This class defines the viewset for the City endpoint."""
+
+    queryset = City.objects.all()
+    serializer_class = CitySerializer
+
+    @ action(detail=False, methods=['get'], serializer_class=CitySerializer)
+    def get_cities(self, request):
+        """Gets the list of cities.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+        """
+
+        # Get the query parameters
+        city = get_param('name', request)
+        country = get_param('country', request)
+
+        if city:
+            # Get the specific city with the provided city name
+            cities = City.objects.filter(name=city)
+            if not cities.exists():
+                return Response({"detail": f'City \'{city}\' not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_serializer(cities.first()).data, status=status.HTTP_200_OK)
+
+        if country:
+            # Get the specific cities with the provided country name
+            cities = City.objects.filter(country=country)
+            if not cities.exists():
+                return Response({"detail": f'No cities found in \'{country}\'.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_serializer(cities, many=True).data, status=status.HTTP_200_OK)
+
+        # Otherwise get all cities
+        cities = City.objects.all()
+        if not cities.exists():
+            return Response(
+                {"detail": "No cities available."},
+                status=status.HTTP_204_NO_CONTENT)
+
+        return Response(self.get_serializer(cities, many=True).data, status=status.HTTP_200_OK)
+
+
+class CountryViewSet(viewsets.GenericViewSet):
+    """This class defines the viewset for the Country endpoint."""
+
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+
+    @ action(detail=False, methods=['get'], serializer_class=CountrySerializer)
+    def get_countries(self, request):
+        """Gets the list of countries.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+        """
+
+        # Get the query parameters
+        country = get_param('name', request)
+        continent = get_param('continent', request)
+
+        if country:
+            # Get the specific country with the provided country name
+            countries = Country.objects.filter(name=country)
+            if not countries.exists():
+                return Response({"detail": f'Country \'{country}\' not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_serializer(countries.first()).data, status=status.HTTP_200_OK)
+
+        if continent:
+            # Get the specific countries with the provided continent name
+            countries = Country.objects.filter(continent=continent)
+            if not countries.exists():
+                return Response({"detail": f'No countries found in \'{continent}\'.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(self.get_serializer(countries, many=True).data, status=status.HTTP_200_OK)
+
+        # Otherwise get all countries
+        countries = Country.objects.all()
+        if not countries.exists():
+            return Response(
+                {"detail": "No countries available."},
+                status=status.HTTP_204_NO_CONTENT)
+
+        return Response(self.get_serializer(countries, many=True).data, status=status.HTTP_200_OK)

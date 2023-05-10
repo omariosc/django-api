@@ -16,7 +16,7 @@ from django.db import models
 class Country(models.Model):
     """Stores information about a country."""
 
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, primary_key=True, unique=True)
     continent = models.CharField(max_length=255)
     # any other fields you want to store for a country
 
@@ -34,7 +34,6 @@ class City(models.Model):
 
     name = models.CharField(max_length=255)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
-    # any other fields you want to store for a city
 
     class Meta:
         """Meta class for the City model."""
@@ -89,7 +88,7 @@ class Airport(models.Model):
             str: The string representation of the object.
         """
 
-        return f'{self.name} ({self.city}, {self.city.country})'
+        return f'{self.name} ({self.city})'
 
 
 class Flight(models.Model):
@@ -117,6 +116,23 @@ class Flight(models.Model):
         """
         return f'{self.flight_code} [{self.departure_airport} - {self.destination_airport}]'
 
+    def save(self, *args, **kwargs):
+        """Overrides the save method to ensure that the number of available seats
+
+        Raises:
+            ValueError: If the number of available seats is greater than the total seats.
+            ValueError: If the number of available seats is less than zero.
+        """
+
+        if self.available_seats < 0:
+            raise ValueError('Available seats cannot be less than zero')
+
+        if self.available_seats > self.total_seats:
+            raise ValueError(
+                'Available seats cannot be greater than total seats')
+
+        super().save(*args, **kwargs)
+
 
 class Booking(models.Model):
     """Stores information about a booking."""
@@ -133,7 +149,8 @@ class Booking(models.Model):
             str: The string representation of the object.
         """
 
-        return f'{self.booking_ref} [{self.flight.departure_airport} - {self.flight.destination_airport}]'
+        return f'{self.booking_ref} \
+            [{self.flight.departure_airport} - {self.flight.destination_airport}]'
 
     def save(self, *args, **kwargs):
         """
@@ -163,7 +180,7 @@ class Booking(models.Model):
             }
 
             # Make the request
-            requests.post(url, data=data)
+            requests.post(url, data=data, timeout=5)
 
         super(Booking, self).save(*args, **kwargs)
 
@@ -188,7 +205,7 @@ class Booking(models.Model):
         }
 
         # Make the request
-        requests.delete(url, data=data)
+        requests.delete(url, data=data, timeout=5)
 
         super(Booking, self).delete(*args, **kwargs)
 

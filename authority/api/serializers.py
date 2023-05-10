@@ -1,7 +1,7 @@
 """This module contains the serializers for the authority app."""
 
 from rest_framework import serializers
-from .models import Airline, Airport, Flight, Booking
+from .models import Airline, Airport, Flight, Booking, City, Country
 
 
 class FlightSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class BookingSerializer(serializers.ModelSerializer):
         """Meta class for the BookingSerializer."""
 
         model = Booking
-        fields = '__all__'
+        fields = ('booking_ref', 'flight', 'passport_number')
         read_only_fields = ('booking_ref',)
 
     def create(self, validated_data):
@@ -55,4 +55,24 @@ class AirportSerializer(serializers.ModelSerializer):
         """Meta class for the AirportSerializer."""
 
         model = Airport
+        fields = '__all__'
+
+
+class CitySerializer(serializers.ModelSerializer):
+    """Serializes the City model."""
+
+    class Meta:
+        """Meta class for the CitySerializer."""
+
+        model = City
+        fields = '__all__'
+
+
+class CountrySerializer(serializers.ModelSerializer):
+    """Serializes the Country model."""
+
+    class Meta:
+        """Meta class for the CountrySerializer."""
+
+        model = Country
         fields = '__all__'
