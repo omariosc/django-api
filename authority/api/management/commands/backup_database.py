@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 f'Successfully backed up the database to {backup_file}'))
         else:
             # dumpdata api --indent 4 > db.json # MySQL
-            backup_file = f'db_backup_{timestamp}.json'
+            backup_file = os.path.join(backup_dir, f'db_backup_{timestamp}.json')
             output = StringIO()
             call_command('dumpdata', 'api', '--indent=4', stdout=output)
 
