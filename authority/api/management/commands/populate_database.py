@@ -39,7 +39,7 @@ class Command(BaseCommand):
         airlines = {
             'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'sc20asb.pythonanywhere.com'},
             'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'sc20amb.pythonanywhere.com'},
-            'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
+            # 'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
             'AA': {'code': 'AA', 'name': 'API Airlines', 'ip': 'sc20cwb1.pythonanywhere.com'}
         }
 
