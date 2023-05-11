@@ -8,7 +8,7 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
-    """Backs up the database."""
+    """Command to back up the database."""
 
     help = 'Backs up the database.'
 
@@ -40,7 +40,3 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.ERROR(
                 'Only SQLite3 backups are supported in this script.'))
-
-# For Unix-based systems, open the terminal and type crontab -e to edit the cron table.
-# Add the following line at the end of the file:
-# 0 * * * * /path/to/your/python /path/to/your/manage.py backup_database

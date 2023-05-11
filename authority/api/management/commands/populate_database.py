@@ -117,6 +117,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f'{success} airports added successfully!'))
+        
         if missing:
             self.stdout.write(self.style.WARNING(
                 f'{missing} airports missing id!'))

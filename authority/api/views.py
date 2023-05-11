@@ -9,7 +9,21 @@ from .models import Airline, Airport, Flight, Booking, City, Country
 from .filters import AirportFilter, FlightFilter
 from .serializers import AirlineSerializer, AirportSerializer, \
     FlightSerializer, BookingSerializer, CitySerializer, CountrySerializer
-from .utils import get_param
+
+
+def get_param(param, request):
+    """Gets a parameter from the request.
+
+    Args:
+        param (str): The parameter to get.
+        request (Request): The request object.
+
+    Returns:
+        str: The parameter value.
+    """
+
+    query = request.query_params.get(param)
+    return query if query else request.data.get(param)
 
 
 class AirlineViewSet(viewsets.GenericViewSet):
@@ -34,6 +48,7 @@ class AirlineViewSet(viewsets.GenericViewSet):
         Returns:
             Response: The response object.
         """
+        
         airline_code = get_param('code', request)
 
         if airline_code:

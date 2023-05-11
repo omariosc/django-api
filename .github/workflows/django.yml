@@ -1,3 +1,5 @@
+# This is a basic workflow to test and build the API.
+
 name: Django CI
 
 on:
@@ -8,18 +10,22 @@ on:
 
 jobs:
   build:
+    # Runs on local PC
     runs-on: self-hosted
     strategy:
       max-parallel: 1
       matrix:
+        # Python version
         python-version: [3.9]
 
     steps:
+      # Checks-out repository under $GITHUB_WORKSPACE, so the job can access it
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+      # This lets us cache the installed dependencies
       - name: Cache Python dependencies
         uses: actions/cache@v2
         with:
@@ -27,27 +33,33 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+      # This installs the required dependencies
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      # This creates the initial database
       - name: Set up Database
         run: |
           cd authority
           python manage.py makemigrations api
           python manage.py migrate
+      # This populates the database with the initial data
       - name: Populate Database
         run: |
           cd authority
           python manage.py populate_database
+      # This creates the admin users
       - name: Create Administrators
         run: |
           cd authority
           python manage.py create_admin
+      # This runs the tests
       - name: Run Tests
         run: |
           cd authority
           python manage.py runtests
+      # This runs the database backup
       - name: Run Database Backup
         run: |
           cd authority

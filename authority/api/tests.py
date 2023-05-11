@@ -9,10 +9,17 @@ from .models import Airline, Airport, City, Country, Flight, Booking
 from .views import AirlineViewSet, AirportViewSet, CityViewSet, CountryViewSet, FlightViewSet, BookingViewSet
 
 
-
 class SearchCapabilitiesTest(TestCase):
+    """Tests for the search capabilities of the API."""
+    
     @classmethod
     def setUpTestData(cls):
+        """Initialize the test database.
+        
+        Args:
+            cls: The class itself.
+        """
+        
         # Delete the existing database and create a new one
         call_command('flush', '--no-input')
 

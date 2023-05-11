@@ -18,7 +18,6 @@ class Country(models.Model):
 
     name = models.CharField(max_length=255, primary_key=True, unique=True)
     continent = models.CharField(max_length=255)
-    # any other fields you want to store for a country
 
     def __str__(self):
         """Returns the string representation of the object.
@@ -215,6 +214,7 @@ class Booking(models.Model):
         Returns:
             str: The booking reference.
         """
+        
         booking_ref = ''.join(random.choices(
             string.ascii_uppercase + string.digits, k=10))
         while Booking.objects.filter(booking_ref=booking_ref).exists():

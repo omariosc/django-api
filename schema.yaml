@@ -5,7 +5,7 @@ info:
 paths:
   /api/airlines/:
     get:
-      operationId: airlines_retrieve
+      operationId: api_airlines_retrieve
       description: |-
         Returns a list of all airlines.
         If the airline_code parameter is provided, returns the airline with the
@@ -19,7 +19,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - airlines
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -31,99 +31,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Airline'
           description: ''
-    post:
-      operationId: airlines_create
-      description: |-
-        Creates a new airline.
-
-        This version of the code breaks down the validation steps into separate functions for better readability and modularity. The main function now calls these validation functions and proceeds with the creation of the airline only if there are no errors.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-      tags:
-      - airlines
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Airline'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Airline'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Airline'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Airline'
-          description: ''
-    patch:
-      operationId: airlines_partial_update
-      description: |-
-        Modifies an existing airline.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-      tags:
-      - airlines
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedAirline'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedAirline'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedAirline'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Airline'
-          description: ''
-    delete:
-      operationId: airlines_destroy
-      description: |-
-        Deletes an existing airline.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-      tags:
-      - airlines
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
   /api/airports/:
     get:
-      operationId: airports_retrieve
+      operationId: api_airports_retrieve
       description: |-
         Returns a list of all airports, or a specific airport if an ident is provided.
         The ident can be provided as a query parameter, or in the request.
@@ -131,10 +41,8 @@ paths:
         Users can filter airports based on query parameters. For example:
 
         - `/api/airports/?city=New York`
-        - `/api/airports/?country=United States`
-        - `/api/airports/?iso_country=US`
-        - `/api/airports/?iso_region=US-NY`
-        - `/api/airports/?municipality=Los Angeles`
+        - `/api/airports/?country=US`
+        - `/api/airports/?region=US-NY`
         - `/api/airports/?type=large_airport`
         - `/api/airports/?latitude_min=40&latitude_max=45`
         - `/api/airports/?longitude_min=-80&longitude_max=-70`
@@ -146,7 +54,7 @@ paths:
         Returns:
             Response: List of all airports, or a specific airport.
       tags:
-      - airports
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -158,96 +66,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Airport'
           description: ''
-    post:
-      operationId: airports_create
-      description: |-
-        Creates a new airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-      tags:
-      - airports
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Airport'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/Airport'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/Airport'
-        required: true
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Airport'
-          description: ''
-    patch:
-      operationId: airports_partial_update
-      description: |-
-        Modifies an existing airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-      tags:
-      - airports
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PatchedAirport'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/PatchedAirport'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/PatchedAirport'
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Airport'
-          description: ''
-    delete:
-      operationId: airports_destroy
-      description: |-
-        Deletes an existing airport.
-
-        Args:
-            request (Request): The request object.
-
-        Returns:
-            Response: The response object.
-      tags:
-      - airports
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '204':
-          description: No response body
   /api/bookings/:
     get:
-      operationId: bookings_retrieve
+      operationId: api_bookings_retrieve
       description: |-
         Returns a list of all bookings, or a specific booking if a booking_ref is provided.
         If a booking_ref is provided, it can be provided as a query parameter, or in the request.
@@ -255,7 +76,7 @@ paths:
         Returns:
             Response: List of all bookings, or a specific booking.
       tags:
-      - bookings
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -268,7 +89,7 @@ paths:
                 $ref: '#/components/schemas/Booking'
           description: ''
     post:
-      operationId: bookings_create
+      operationId: api_bookings_create
       description: |-
         Creates a new booking.
 
@@ -278,7 +99,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - bookings
+      - api
       requestBody:
         content:
           application/json:
@@ -303,7 +124,7 @@ paths:
                 $ref: '#/components/schemas/Booking'
           description: ''
     patch:
-      operationId: bookings_partial_update
+      operationId: api_bookings_partial_update
       description: |-
         Modifies a booking.
 
@@ -313,7 +134,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - bookings
+      - api
       requestBody:
         content:
           application/json:
@@ -337,7 +158,7 @@ paths:
                 $ref: '#/components/schemas/Booking'
           description: ''
     delete:
-      operationId: bookings_destroy
+      operationId: api_bookings_destroy
       description: |-
         Deletes a booking.
 
@@ -347,7 +168,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - bookings
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -355,9 +176,57 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/cities/:
+    get:
+      operationId: api_cities_retrieve
+      description: |-
+        Gets the list of cities.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+          description: ''
+  /api/countries/:
+    get:
+      operationId: api_countries_retrieve
+      description: |-
+        Gets the list of countries.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+          description: ''
   /api/flights/:
     get:
-      operationId: flights_retrieve
+      operationId: api_flights_retrieve
       description: |-
         Returns a list of all flights, or a specific flight if a flight_code is provided.
         The flight_code can be provided as a query parameter, or in the request.
@@ -367,6 +236,7 @@ paths:
         - `/api/flights/?departure_airport=LAX&destination_airport=JFK`
         - `/api/flights/?airline=AA&base_price_min=100&base_price_max=300`
         - `/api/flights/?departure_datetime_min=2023-05-01T00:00:00Z&departure_datetime_max=2023-05-31T23:59:59Z`
+        - `/api/flights/?departure_datetime_min=2023-05-09&arrival_datetime_max=2023-05-14`
 
         The filters allow users to search for flights within a range of values for various parameters
         such as departure datetime, arrival datetime, duration time, base price, total seats,
@@ -375,7 +245,7 @@ paths:
         Returns:
             Response: List of all flights, or a specific flight.
       tags:
-      - flights
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -388,7 +258,7 @@ paths:
                 $ref: '#/components/schemas/Flight'
           description: ''
     post:
-      operationId: flights_create
+      operationId: api_flights_create
       description: |-
         Creates a new flight.
         The flight_code can be provided as a query parameter, or in the request.
@@ -399,7 +269,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - flights
+      - api
       requestBody:
         content:
           application/json:
@@ -424,7 +294,7 @@ paths:
                 $ref: '#/components/schemas/Flight'
           description: ''
     patch:
-      operationId: flights_partial_update
+      operationId: api_flights_partial_update
       description: |-
         Modifies a flight.
         The flight_code can be provided as a query parameter, or in the request.
@@ -435,7 +305,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - flights
+      - api
       requestBody:
         content:
           application/json:
@@ -459,7 +329,7 @@ paths:
                 $ref: '#/components/schemas/Flight'
           description: ''
     delete:
-      operationId: flights_destroy
+      operationId: api_flights_destroy
       description: |-
         Deletes a flight.
         The flight_code can be provided as a query parameter, or in the request.
@@ -470,7 +340,7 @@ paths:
         Returns:
             Response: The response object.
       tags:
-      - flights
+      - api
       security:
       - cookieAuth: []
       - basicAuth: []
@@ -478,7 +348,7 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/schema/:
+  /schema/:
     get:
       operationId: schema_retrieve
       description: |-
@@ -626,6 +496,7 @@ components:
   schemas:
     Airline:
       type: object
+      description: Serializes the Airline model.
       properties:
         code:
           type: string
@@ -633,23 +504,16 @@ components:
         name:
           type: string
           maxLength: 100
-        country:
-          type: string
-          maxLength: 100
-        phone:
-          type: string
-          maxLength: 20
         ip:
           type: string
           maxLength: 100
       required:
       - code
-      - country
       - ip
       - name
-      - phone
     Airport:
       type: object
+      description: Serializes the Airport model.
       properties:
         ident:
           type: string
@@ -657,19 +521,7 @@ components:
         name:
           type: string
           maxLength: 100
-        city:
-          type: string
-          maxLength: 100
-        country:
-          type: string
-          maxLength: 100
-        iso_country:
-          type: string
-          maxLength: 100
-        iso_region:
-          type: string
-          maxLength: 100
-        municipality:
+        region:
           type: string
           maxLength: 100
         size_type:
@@ -684,25 +536,16 @@ components:
         elevation:
           type: string
           maxLength: 100
-        continent:
-          type: string
-          maxLength: 100
-        link:
-          type: string
-          maxLength: 100
+        city:
+          type: integer
       required:
       - city
-      - continent
-      - country
       - elevation
       - ident
-      - iso_country
-      - iso_region
       - latitude
-      - link
       - longitude
-      - municipality
       - name
+      - region
       - size_type
     Booking:
       type: object
@@ -710,15 +553,44 @@ components:
       properties:
         booking_ref:
           type: string
-          maxLength: 10
-        passport_number:
-          type: integer
+          readOnly: true
         flight:
           type: string
+        passport_number:
+          type: integer
       required:
       - booking_ref
       - flight
       - passport_number
+    City:
+      type: object
+      description: Serializes the City model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        country:
+          type: string
+      required:
+      - country
+      - id
+      - name
+    Country:
+      type: object
+      description: Serializes the Country model.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        continent:
+          type: string
+          maxLength: 255
+      required:
+      - continent
+      - name
     Flight:
       type: object
       description: Serializes the Flight model.
@@ -758,77 +630,17 @@ components:
       - duration_time
       - flight_code
       - total_seats
-    PatchedAirline:
-      type: object
-      properties:
-        code:
-          type: string
-          maxLength: 3
-        name:
-          type: string
-          maxLength: 100
-        country:
-          type: string
-          maxLength: 100
-        phone:
-          type: string
-          maxLength: 20
-        ip:
-          type: string
-          maxLength: 100
-    PatchedAirport:
-      type: object
-      properties:
-        ident:
-          type: string
-          maxLength: 100
-        name:
-          type: string
-          maxLength: 100
-        city:
-          type: string
-          maxLength: 100
-        country:
-          type: string
-          maxLength: 100
-        iso_country:
-          type: string
-          maxLength: 100
-        iso_region:
-          type: string
-          maxLength: 100
-        municipality:
-          type: string
-          maxLength: 100
-        size_type:
-          type: string
-          maxLength: 100
-        latitude:
-          type: number
-          format: double
-        longitude:
-          type: number
-          format: double
-        elevation:
-          type: string
-          maxLength: 100
-        continent:
-          type: string
-          maxLength: 100
-        link:
-          type: string
-          maxLength: 100
     PatchedBooking:
       type: object
       description: Serializes the Booking model.
       properties:
         booking_ref:
           type: string
-          maxLength: 10
-        passport_number:
-          type: integer
+          readOnly: true
         flight:
           type: string
+        passport_number:
+          type: integer
     PatchedFlight:
       type: object
       description: Serializes the Flight model.

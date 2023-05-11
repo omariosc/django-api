@@ -8,6 +8,16 @@ class ReadOnly(admin.ModelAdmin):
     """Admin configuration for the ready only models."""
 
     def get_readonly_fields(self, request, obj=None):
+        """Returns the read only fields.
+
+        Args:
+            request (str): The request.
+            obj (str, optional): The object. Defaults to None.
+
+        Returns:
+            list: The list of read only fields.
+        """
+        
         return [f.name for f in self.model._meta.fields]
 
 class FlightAdmin(admin.ModelAdmin):
@@ -16,6 +26,16 @@ class FlightAdmin(admin.ModelAdmin):
     form = FlightAdminForm
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Returns the read only fields.
+
+        Args:
+            request (str): The request.
+            obj (str, optional): The object. Defaults to None.
+
+        Returns:
+            list: The list of read only fields.
+        """
         return [f.name for f in self.model._meta.fields]
 
 

@@ -5,12 +5,12 @@ from django.contrib.auth.models import User
 
 
 class Command(BaseCommand):
-    """Creates admin users with username and password \"admin\" and \"ammar\"."""
+    """CCommand to create admin users"""
 
-    help = 'Creates an admin user with username "admin" and password "admin"'
+    help = 'Creates admin users with usernames and passwords \"admin\" and \"ammar\".'
 
     def handle(self, *args, **options):
-        """Creates an admin user with username "admin" and password "admin"""
+        """Creates admin users with usernames and passwords \"admin\" and \"ammar\"."""
 
         admin = "admin"
         ammar = "ammar"

@@ -9,13 +9,17 @@ from .views import AirlineViewSet, AirportViewSet, \
     FlightViewSet, BookingViewSet, CityViewSet, CountryViewSet
 
 urlpatterns = [
+    # This path is used to access the API documentation
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
          name='swagger-ui'),
     path('', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    # This path is used to access the admin panel
     path('admin/', admin.site.urls),
 
+    # These paths are used to access the endpoints
     path('api/flights/', FlightViewSet.as_view({
         'get': 'get_flights',
         'post': 'create_flight',
@@ -30,6 +34,7 @@ urlpatterns = [
         'delete': 'delete_booking',
     }), name='bookings'),
 
+    # These paths are used to access the search capabilities
     path('api/airlines/', AirlineViewSet.as_view({
         'get': 'get_airlines',
     }), name='airlines'),
@@ -45,6 +50,5 @@ urlpatterns = [
     path('api/countries/', CountryViewSet.as_view({
         'get': 'get_countries',
     }), name='countries'),
-
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

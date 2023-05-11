@@ -96,9 +96,11 @@ class BookingAdminForm(forms.ModelForm):
         if passport_number and passport_number < 0:
             raise ValidationError("Passport number cannot be negative.")
 
+        # If booking already exists
         if Booking.objects.filter(passport_number=passport_number, flight=flight).exists():
             raise ValidationError("This booking already exists.")
 
+        # If flight has no available seats
         if flight and flight.available_seats == 0:
             raise ValidationError(
                 "Cannot create a booking for a flight with no available seats.")
