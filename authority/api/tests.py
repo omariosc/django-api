@@ -1,13 +1,8 @@
 """This module contains the tests for the API."""
 
 from django.core.management import call_command
-from django.urls import reverse
-from django.test import TestCase, Client, RequestFactory
-from rest_framework.test import APITestCase, APIRequestFactory
-from rest_framework import status
-from .models import Airline, Airport, City, Country, Flight, Booking
+from django.test import TestCase,RequestFactory
 from .views import AirlineViewSet, AirportViewSet, CityViewSet, CountryViewSet, FlightViewSet, BookingViewSet
-
 
 class SearchCapabilitiesTest(TestCase):
     """Tests for the search capabilities of the API."""
@@ -19,7 +14,6 @@ class SearchCapabilitiesTest(TestCase):
         Args:
             cls: The class itself.
         """
-        
         # Delete the existing database and create a new one
         call_command('flush', '--no-input')
 

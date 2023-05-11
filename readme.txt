@@ -30,16 +30,33 @@ ammar
 
 To use the service as an admin, you may access the admin functions using [https://sc20osc.pythonanywhere.com/admin/](https://sc20osc.pythonanywhere.com/admin/) using the provided admin credentials. This will allow you to access and modify the database. Note that this will automatically make the changes on other impacted services also.
 
-## Tasks
+### Useful Commands
 
-- Comments
-- Documentation
-- Testing
-- MySQL database
-- Auto backup database
-- readme.txt
-- README.md
-- Report
+Below are some useful commands that can be used to run the service locally.
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run migrations
+python manage.py makemigrations api
+python manage.py migrate
+
+# Populate database
+python manage.py populate_database
+
+# Create admin
+python manage.py create_admin
+
+# Run server
+python manage.py runserver
+
+# Run tests
+python manage.py runtests # Locally only
+
+# Backup database
+python manage.py backup_database
+```
 
 ## Database
 

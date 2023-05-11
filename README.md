@@ -50,11 +50,10 @@ python manage.py create_admin
 python manage.py runserver
 
 # Run tests
-python manage.py runtests
+python manage.py runtests # Locally only
 
 # Backup database
-python manage.py dumpdata api --indent 4 > db.json # MySQL
-python manage.py backup_database # MySQL
+python manage.py backup_database
 ```
 
 ## Database
