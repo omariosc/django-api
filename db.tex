@@ -1,4 +1,4 @@
-\documentclass[tikz,convert={density=300,size=1080x800,outext=.png}]{standalone}
+\documentclass[tikz,convert={density=600,size=1080x800,outext=.png}]{standalone}
 \usepackage{tikz}
 \usepackage{ifthen}
 \usepackage{etoolbox}
@@ -10,7 +10,17 @@
 \tikzset{
     table relation/.style={
         %below=of game,
-        nodes={draw=black, text width=7.1cm},
+        nodes={draw=black, text width=5cm}, % Change the text width here to reduce the width of all tables
+        row 1/.style={nodes={align=center, fill=lightgray, font=\bfseries}},
+        row/.style={anchor=base east}
+    },
+    booking table/.style={
+        nodes={draw=black, text width=6cm}, % Change the text width here to increase the width of the Flight table
+        row 1/.style={nodes={align=center, fill=lightgray, font=\bfseries}},
+        row/.style={anchor=base east}
+    },
+    flight table/.style={
+        nodes={draw=black, text width=8cm}, % Change the text width here to increase the width of the Flight table
         row 1/.style={nodes={align=center, fill=lightgray, font=\bfseries}},
         row/.style={anchor=base east}
     },
@@ -52,17 +62,17 @@
     % <attribute name>/<PK or FK label (optional)>/<data type>
     \foreach \x/\y/\z/\u in {
         id/PK/IntegerField/ UNIQ,
-        Code//TextField/ UNIQ,
-        Name//TextField/ UNIQ,
-        Country//TextField,
-        Phone//TextField/ UNIQ,
+        Code//CharField/ UNIQ,
+        Name//CharField/ UNIQ,
+        Country//CharField,
+        Phone//CharField/ UNIQ,
     } {
         \xappto\matrixcontent{\expandonce{\node} (t1_\x) {\x\ \y\ \expandonce{\texttt}{\z} \u};\\}
     }
     \matrix[
         matrix of nodes,
         table relation,
-    ] at (0, 0) { % Position of the table is (0, 0)
+    ] at (0, 1.15) { % Position of the table is (0, 0)
         \node (t1) {Airline};\\
         \matrixcontent
     };\\
@@ -76,22 +86,23 @@
     % <attribute name>/<PK or FK label (optional)>/<data type>
     \foreach \x/\y/\z/\u in {
         id/PK/IntegerField/ UNIQ,
-        DepartureAirport/FK/TextField,
-        DestinationAirport/FK/TextField,
-        DepartureDate//DateField,
-        ArrivalDate//DateField,
+        DepartureAirport/FK/CharField,
+        DestinationAirport/FK/CharField,
+        FlightCode//CharField,
+        DepartureDateTime//DateTimeField,
+        ArrivalDateTime//DateTimeField,
         DurationTime//DurationField,
         BasePrice//FloatField,
         TotalSeats//IntegerField,
         AvailableSeats//IntegerField,
-        AirlineID/FK/TextField,
+        AirlineID/FK/CharField,
     } {
         \xappto\matrixcontent{\expandonce{\node} (t2_\x) {\x\ \y\ \expandonce{\texttt}{\z} \u};\\}
     }
     \matrix[
         matrix of nodes,
-        table relation,
-    ] at (7.5, -2) {
+        flight table,
+    ] at (7, -0.2) {
         \node (t2) {Flight};\\
         \matrixcontent
     };\\
@@ -102,16 +113,16 @@
 
     \foreach \x/\y/\z/\u in {
         id/PK/IntegerField/ UNIQ,
-        Name//TextField/ UNIQ,
-        City//TextField,
-        Country//TextField,
+        Name//CharField/ UNIQ,
+        City//CharField,
+        Country//CharField,
     } {
         \xappto\matrixcontent{\expandonce{\node} (t3_\x) {\x\ \y\ \expandonce{\texttt}{\z} \u};\\}
     }
     \matrix[
         matrix of nodes,
         table relation,
-    ] at (0, -5) { % Position of the table is (0, 0)
+    ] at (0, -2) { % Position of the table is (0, 0)
         \node (t3) {Airport};\\
         \matrixcontent
     };\\
@@ -120,15 +131,16 @@
 
     \foreach \x/\y/\z/\u in {
        BookingID/PK/IntegerField/ UNIQ,
-        PassportNumber//IntegerField/ UNIQ,
-        FlightID/FK/IntegerField,
+       BookingRef//CharField/ UNIQ,
+        PassportNumber//IntegerField/ ,
+        FlightCode/FK/CharField,
     } {
         \xappto\matrixcontent{\expandonce{\node} (t4_\x) {\x\ \y\ \expandonce{\texttt}{\z} \u};\\}
     }
     \matrix[
         matrix of nodes,
-        table relation,
-    ] at (15, 0) { % Position of the table is (0, 0)
+        booking table,
+    ] at (14.5, -1) { % Position of the table is (0, 0)
         \node (t4) {Booking};\\
         \matrixcontent
     };\\
@@ -155,15 +167,15 @@
         \node[fill=white,align=center, yshift=4.75pt] at ($(\x.\p)!0.85!(\y.\q)$) {\footnotesize\b};
     }
     \foreach \x/\p/\a/\y/\q/\b in {
-       t3_id/east/1/t2_DepartureAirport/west/1,
-       t3_id/east/1/t2_DestinationAirport/west/1
+       t3_id/east/1/t2_DepartureAirport/west/*,
+       t3_id/east/1/t2_DestinationAirport/west/*
     } {
         \draw[] (\x.\p) to[-|-] (\y.\q);
         \node[fill=white,align=center, yshift=-10pt] at ($(\x.\p)!0.15!(\y.\q)$) {\footnotesize\a};
         \node[fill=white,align=center, yshift=26.25pt, xshift=-1pt] at ($(\x.\p)!0.85!(\y.\q)$) {\footnotesize\b};
     }
     \foreach \x/\p/\a/\y/\q/\b in {
-        t4_FlightID/west/*/t2/east/1
+        t4_FlightCode/west/*/t2/east/1
     } {
         \draw[] (\x.\p) to[-|-] (\y.\q);
         \node[fill=white,align=center, yshift=2pt] at ($(\x.\p)!0.15!(\y.\q)$) {\footnotesize\a};
