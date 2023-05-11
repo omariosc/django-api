@@ -38,13 +38,17 @@ jobs:
           python manage.py migrate
       - name: Populate Database
         run: |
+          cd authority
           python manage.py populate_database
       - name: Create Administrators
         run: |
+          cd authority
           python manage.py create_admin
       - name: Run Tests
         run: |
+          cd authority
           python manage.py runtests
       - name: Run Database Backup
         run: |
+          cd authority
           python manage.py backup_database
