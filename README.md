@@ -51,6 +51,10 @@ python manage.py runserver
 
 # Run tests
 python manage.py runtests
+
+# Backup database
+python manage.py dumpdata api --indent 4 > db.json # MySQL
+python manage.py backup_database # MySQL
 ```
 
 ## Database
