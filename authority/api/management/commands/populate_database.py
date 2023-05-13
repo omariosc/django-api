@@ -37,9 +37,9 @@ class Command(BaseCommand):
         """Populates the airlines table."""
 
         airlines = {
-            'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'sc20asb.pythonanywhere.com'},
-            'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'sc20amb.pythonanywhere.com'},
-            # 'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
+            'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'ed19a4t.pythonanywhere.com'},
+            'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'masssI123.pythonanywhere.com'},
+            'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
             'AA': {'code': 'AA', 'name': 'API Airlines', 'ip': 'sc20cwb1.pythonanywhere.com'}
         }
 
