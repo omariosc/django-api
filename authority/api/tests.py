@@ -79,7 +79,7 @@ class SearchCapabilitiesTest(TestCase):
     def test_get_filter_airlines(self):
         """Test the filtering using the GET request for airlines."""
         
-        request = self.factory.get('/airlines/', {'code': 'SL'})
+        request = self.factory.get('/airlines/', {'code': 'AA'})
         view = AirlineViewSet.as_view({'get': 'get_airlines'})
         response = view(request)
         self.assertEqual(response.status_code, 200)

@@ -31,15 +31,16 @@ class Command(BaseCommand):
 
         self.populate_airlines()
         self.populate_airports(AIRPORTS_FILE)
-        self.generate_flights(NUM_FLIGHTS)  # Also generates bookings
+        # Do not generate flights as the airline can do this instead
+        # self.generate_flights(NUM_FLIGHTS)  # Also generates bookings
 
     def populate_airlines(self):
         """Populates the airlines table."""
 
         airlines = {
-            'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'ed19a4t.pythonanywhere.com'},
-            'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'masssI123.pythonanywhere.com'},
-            'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
+            # 'SL': {'code': 'SL', 'name': 'SkyLink', 'ip': 'ed19a4t.pythonanywhere.com'},
+            # 'FA': {'code': 'FA', 'name': 'FlyAmmar', 'ip': 'masssI123.pythonanywhere.com'},
+            # 'AS': {'code': 'AS', 'name': 'Airsalka', 'ip': 'sc20s2r.pythonanywhere.com'},
             'AA': {'code': 'AA', 'name': 'API Airlines', 'ip': 'sc20cwb1.pythonanywhere.com'}
         }
 

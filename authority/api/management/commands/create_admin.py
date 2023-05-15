@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 class Command(BaseCommand):
-    """CCommand to create admin users"""
+    """Command to create admin users"""
 
     help = 'Creates admin users with usernames and passwords \"admin\" and \"ammar\".'
 

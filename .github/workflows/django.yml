@@ -11,7 +11,9 @@ on:
 jobs:
   build:
     # Runs on local PC
-    runs-on: self-hosted
+    # runs-on: self-hosted
+    # Runs on GitHub hosted runner
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
       matrix:

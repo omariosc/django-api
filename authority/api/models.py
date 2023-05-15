@@ -179,7 +179,7 @@ class Booking(models.Model):
             }
 
             # Make the request
-            requests.post(url, data=data, timeout=5)
+            requests.post(url, data=data, timeout=20)
 
         super(Booking, self).save(*args, **kwargs)
 
