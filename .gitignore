@@ -39,6 +39,7 @@ coverage_html_report/
 
 # env
 api/
+.venv/
 
 # github runner
 actions-runner/
