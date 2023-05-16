@@ -10,12 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -24,10 +23,9 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 SECRET_KEY = 'django-insecure-171)a@28hs84v1f)ntsuxw0$t@j_k!%_&e8%gony_=+ka%+z3c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -40,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'django_extensions',
     'drf_yasg',
     'drf_spectacular',
     'api'
@@ -74,7 +73,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'api.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -115,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -126,7 +123,6 @@ TIME_ZONE = 'GMT'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/

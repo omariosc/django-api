@@ -1,6 +1,7 @@
 """This module contains the serializers for the authority app."""
 
 from rest_framework import serializers
+
 from .models import Airline, Airport, Flight, Booking, City, Country
 
 

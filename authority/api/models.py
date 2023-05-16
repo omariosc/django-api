@@ -7,8 +7,9 @@ and unique constraints are specified using the unique=True parameter
 for the respective fields.
 """
 
-import string
 import random
+import string
+
 import requests
 from django.db import models
 
@@ -214,7 +215,7 @@ class Booking(models.Model):
         Returns:
             str: The booking reference.
         """
-        
+
         booking_ref = ''.join(random.choices(
             string.ascii_uppercase + string.digits, k=10))
         while Booking.objects.filter(booking_ref=booking_ref).exists():

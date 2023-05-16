@@ -1,8 +1,10 @@
 """This module contains the admin configuration for the API."""
 
 from django.contrib import admin
+
 from .forms import FlightAdminForm, BookingAdminForm
 from .models import Airline, Airport, City, Country, Flight, Booking
+
 
 class ReadOnly(admin.ModelAdmin):
     """Admin configuration for the ready only models."""
@@ -17,8 +19,9 @@ class ReadOnly(admin.ModelAdmin):
         Returns:
             list: The list of read only fields.
         """
-        
+
         return [f.name for f in self.model._meta.fields]
+
 
 class FlightAdmin(admin.ModelAdmin):
     """Admin configuration for the Flight model."""

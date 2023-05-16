@@ -1,12 +1,14 @@
 """This module contains the viewsets for the Flight and Booking endpoints."""
 
 import requests
+from django.views.static import serve
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django_filters.rest_framework import DjangoFilterBackend
-from .models import Airline, Airport, Flight, Booking, City, Country
+
 from .filters import AirportFilter, FlightFilter
+from .models import Airline, Airport, Flight, Booking, City, Country
 from .serializers import AirlineSerializer, AirportSerializer, \
     FlightSerializer, BookingSerializer, CitySerializer, CountrySerializer
 
@@ -33,7 +35,7 @@ class AirlineViewSet(viewsets.GenericViewSet):
     serializer_class = AirlineSerializer
     filter_backends = [DjangoFilterBackend]
 
-    @ action(detail=False, methods=['get'], serializer_class=AirlineSerializer)
+    @action(detail=False, methods=['get'], serializer_class=AirlineSerializer)
     def get_airlines(self, request):
         """
         Returns a list of all airlines.
@@ -48,7 +50,7 @@ class AirlineViewSet(viewsets.GenericViewSet):
         Returns:
             Response: The response object.
         """
-        
+
         airline_code = get_param('code', request)
 
         if airline_code:
@@ -76,7 +78,7 @@ class AirportViewSet(viewsets.GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = AirportFilter
 
-    @ action(detail=False, methods=['get'], serializer_class=AirportSerializer)
+    @action(detail=False, methods=['get'], serializer_class=AirportSerializer)
     def get_airports(self, request):
         """
         Returns a list of all airports, or a specific airport if an ident is provided.
@@ -109,7 +111,8 @@ class AirportViewSet(viewsets.GenericViewSet):
                 # Return the airport
                 return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
-                return Response({'error': f'Airport with ident {ident} and name {name} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with ident {ident} and name {name} does not exist.'},
+                                status=status.HTTP_404_NOT_FOUND)
 
             # Serialize the data
             serializer = AirportSerializer(airport)
@@ -121,7 +124,8 @@ class AirportViewSet(viewsets.GenericViewSet):
                 airport = Airport.objects.get(ident=ident)
                 return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
-                return Response({'error': f'Airport with ident {ident} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with ident {ident} does not exist.'},
+                                status=status.HTTP_404_NOT_FOUND)
 
         if name:
             # If an ident is provided, return the airport with that ident
@@ -129,7 +133,8 @@ class AirportViewSet(viewsets.GenericViewSet):
                 airport = Airport.objects.get(name=name)
                 return Response(AirportSerializer(airport).data, status=status.HTTP_200_OK)
             except Airport.DoesNotExist:
-                return Response({'error': f'Airport with name {name} does not exist.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': f'Airport with name {name} does not exist.'},
+                                status=status.HTTP_404_NOT_FOUND)
 
         # We want to allow the user to get airports based on a query parameter
         # They can choose a specific city, country, region, type, latitude, longitude, elevation, continent
@@ -144,10 +149,10 @@ class AirportViewSet(viewsets.GenericViewSet):
         # If no airports are found, return 404
         if not airports:
             return Response({'error': 'No airports found.'}, status=status.HTTP_404_NOT_FOUND)
-        
+
         # Serialize the data
         serializer = AirportSerializer(airports, many=True)
-        
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -159,7 +164,7 @@ class FlightViewSet(viewsets.GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = FlightFilter
 
-    @ action(detail=False, methods=['get'], serializer_class=FlightSerializer)
+    @action(detail=False, methods=['get'], serializer_class=FlightSerializer)
     def get_flights(self, request):
         """
         Returns a list of all flights, or a specific flight if a flight_code is provided.
@@ -211,7 +216,7 @@ class FlightViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @ action(detail=False, methods=['post'], serializer_class=FlightSerializer)
+    @action(detail=False, methods=['post'], serializer_class=FlightSerializer)
     def create_flight(self, request):
         """
         Creates a new flight.
@@ -248,7 +253,7 @@ class FlightViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @ action(detail=False, methods=['patch'], serializer_class=FlightSerializer)
+    @action(detail=False, methods=['patch'], serializer_class=FlightSerializer)
     def modify_flight(self, request):
         """
         Modifies a flight.
@@ -283,7 +288,7 @@ class FlightViewSet(viewsets.GenericViewSet):
 
         return Response({"detail": f'Flight \'{flight_code}\' modified'}, status=status.HTTP_200_OK)
 
-    @ action(detail=False, methods=['delete'], serializer_class=FlightSerializer)
+    @action(detail=False, methods=['delete'], serializer_class=FlightSerializer)
     def delete_flight(self, request):
         """
         Deletes a flight.
@@ -319,7 +324,7 @@ class BookingViewSet(viewsets.GenericViewSet):
     serializer_class = BookingSerializer
     filter_backends = [DjangoFilterBackend]
 
-    @ action(detail=False, methods=['get'], serializer_class=BookingSerializer)
+    @action(detail=False, methods=['get'], serializer_class=BookingSerializer)
     def get_bookings(self, request):
         """
         Returns a list of all bookings, or a specific booking if a booking_ref is provided.
@@ -347,18 +352,22 @@ class BookingViewSet(viewsets.GenericViewSet):
                 bookings = Booking.objects.filter(
                     flight=flight_code, passport_number=passport_number)
                 if not bookings.exists():
-                    return Response({"detail": f'No bookings found with flight code \'{flight_code}\' and passport number \'{passport_number}\'.'}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({
+                        "detail": f'No bookings found with flight code \'{flight_code}\' and passport number \'{passport_number}\'.'},
+                        status=status.HTTP_404_NOT_FOUND)
             else:
                 bookings = Booking.objects.filter(flight=flight_code)
                 if not bookings.exists():
-                    return Response({"detail": f'No bookings found with flight code \'{flight_code}\'.'}, status=status.HTTP_404_NOT_FOUND)
+                    return Response({"detail": f'No bookings found with flight code \'{flight_code}\'.'},
+                                    status=status.HTTP_404_NOT_FOUND)
             return Response(self.get_serializer(bookings.first()).data, status=status.HTTP_200_OK)
 
         if passport_number:
             # Get the specific bookings with the provided passport_number
             bookings = Booking.objects.filter(passport_number=passport_number)
             if not bookings.exists():
-                return Response({"detail": f'No bookings found with passport number \'{passport_number}\'.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"detail": f'No bookings found with passport number \'{passport_number}\'.'},
+                                status=status.HTTP_404_NOT_FOUND)
             return Response(self.get_serializer(bookings.first()).data, status=status.HTTP_200_OK)
 
         # Otherwise get all bookings
@@ -369,7 +378,7 @@ class BookingViewSet(viewsets.GenericViewSet):
                 status=status.HTTP_204_NO_CONTENT)
         return Response(self.get_serializer(bookings, many=True).data, status=status.HTTP_200_OK)
 
-    @ action(detail=False, methods=['post'], serializer_class=BookingSerializer)
+    @action(detail=False, methods=['post'], serializer_class=BookingSerializer)
     def create_booking(self, request):
         """Creates a new booking.
 
@@ -389,7 +398,8 @@ class BookingViewSet(viewsets.GenericViewSet):
         if booking_ref:
             booking = Booking.objects.filter(booking_ref=booking_ref).first()
             if booking:
-                return Response({"error": f'Booking \'{booking_ref}\' already exists'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": f'Booking \'{booking_ref}\' already exists'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
         flight = Flight.objects.filter(flight_code=flight_code).first()
         if not flight:
@@ -400,8 +410,10 @@ class BookingViewSet(viewsets.GenericViewSet):
             booking = Booking.objects.filter(
                 flight=flight, passport_number=passport_number).first()
             if booking:
-                return Response({"error": f'Booking already exists with flight \'{flight_code}\' and passport number \'{passport_number}\''}, status=status.HTTP_400_BAD_REQUEST)
-        
+                return Response({
+                    "error": f'Booking already exists with flight \'{flight_code}\' and passport number \'{passport_number}\''},
+                    status=status.HTTP_400_BAD_REQUEST)
+
         # Save the booking
         booking = Booking.objects.create(
             passport_number=passport_number,
@@ -414,7 +426,7 @@ class BookingViewSet(viewsets.GenericViewSet):
         # but we return the whole booking object
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @ action(detail=False, methods=['patch'], serializer_class=BookingSerializer)
+    @action(detail=False, methods=['patch'], serializer_class=BookingSerializer)
     def modify_booking(self, request):
         """Modifies a booking.
 
@@ -444,7 +456,7 @@ class BookingViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @ action(detail=False, methods=['delete'], serializer_class=BookingSerializer)
+    @action(detail=False, methods=['delete'], serializer_class=BookingSerializer)
     def delete_booking(self, request):
         """Deletes a booking.
 
@@ -495,7 +507,7 @@ class CityViewSet(viewsets.GenericViewSet):
     queryset = City.objects.all()
     serializer_class = CitySerializer
 
-    @ action(detail=False, methods=['get'], serializer_class=CitySerializer)
+    @action(detail=False, methods=['get'], serializer_class=CitySerializer)
     def get_cities(self, request):
         """Gets the list of cities.
 
@@ -540,7 +552,7 @@ class CountryViewSet(viewsets.GenericViewSet):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
 
-    @ action(detail=False, methods=['get'], serializer_class=CountrySerializer)
+    @action(detail=False, methods=['get'], serializer_class=CountrySerializer)
     def get_countries(self, request):
         """Gets the list of countries.
 

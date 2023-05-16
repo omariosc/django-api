@@ -1,6 +1,7 @@
 """This file contains the filters for the Airport and Flight models."""
 
 import django_filters
+
 from .models import Airport, Flight
 
 

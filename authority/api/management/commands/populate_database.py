@@ -1,13 +1,14 @@
 """Populates the entire database with airports, airlines, flights, and bookings."""
 
-import os
 import csv
+import os
 import random
 from datetime import datetime, timedelta
+
 import django
-from django.utils.timezone import make_aware
-from django.core.management.base import BaseCommand
 from api.models import City, Country, Airport, Airline, Flight, Booking
+from django.core.management.base import BaseCommand
+from django.utils.timezone import make_aware
 
 # Set seed for random
 random.seed(42)
@@ -68,7 +69,7 @@ class Command(BaseCommand):
             for i, row in enumerate(reader):
                 # Do only 100 airports, every 700th airport
                 if i % 700 != 0:
-                    continue            
+                    continue
                 if not row['ident']:
                     missing += 1
                     self.stdout.write(self.style.WARNING(
@@ -118,7 +119,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(
             f'{success} airports added successfully!'))
-        
+
         if missing:
             self.stdout.write(self.style.WARNING(
                 f'{missing} airports missing id!'))
@@ -147,7 +148,7 @@ class Command(BaseCommand):
             departure_datetime = make_aware(
                 datetime.now() + timedelta(hours=random.randint(-720, 720)))
             arrival_datetime = departure_datetime + \
-                timedelta(minutes=random.randint(60, 1200))
+                               timedelta(minutes=random.randint(60, 1200))
             duration = arrival_datetime - departure_datetime
             base_price = round(random.uniform(10, 10000), 2)
             total_seats = random.randint(100, 250)
