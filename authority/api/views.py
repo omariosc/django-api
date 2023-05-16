@@ -333,6 +333,7 @@ class BookingViewSet(viewsets.GenericViewSet):
         Returns:
             Response: List of all bookings, or a specific booking.
         """
+        
         booking_ref = get_param('booking_ref', request)
 
         if booking_ref:
