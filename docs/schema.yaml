@@ -7,17 +7,29 @@ paths:
     get:
       operationId: api_airlines_retrieve
       description: |-
-        Returns a list of all airlines.
-        If the airline_code parameter is provided, returns the airline with the
-        specified code.
-        If query parameters are provided, returns a list of airlines that match
-        the query parameters.
+        This API endpoint retrieves a list of all airlines or a specific airline, depending on the provided parameters.
 
-        Args:
-            request (Request): The request object.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - code: (optional) The unique code of the airline to be retrieved.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the 'code' parameter is provided and an airline with that code exists:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized representation of the airline.
+                - If the 'code' parameter is provided and an airline with that code does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
+                - If the 'code' parameter is not provided:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized list of all airlines.
+
+        Example usage:
+            To get a list of all airlines: GET /api/airlines/
+            To get a specific airline: GET /api/airlines/?code=AA
       tags:
       - api
       security:
@@ -35,24 +47,46 @@ paths:
     get:
       operationId: api_airports_retrieve
       description: |-
-        Returns a list of all airports, or a specific airport if an ident is provided.
-        The ident can be provided as a query parameter, or in the request.
+        This API endpoint retrieves a list of all airports or specific airports based on provided parameters.
 
-        Users can filter airports based on query parameters. For example:
-
-        - `/api/airports/?city=New York`
-        - `/api/airports/?country=US`
-        - `/api/airports/?region=US-NY`
-        - `/api/airports/?type=large_airport`
-        - `/api/airports/?latitude_min=40&latitude_max=45`
-        - `/api/airports/?longitude_min=-80&longitude_max=-70`
-        - `/api/airports/?elevation_min=100&elevation_max=200`
-        - `/api/airports/?continent=NA`
-
-        Note that the filtering is case-insensitive and uses the icontains lookup expression for text-based fields, which means it will match any airport containing the specified text. You can change the lookup expression to suit your needs.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - ident: (optional) The unique identifier of the airport to be retrieved.
+                - name: (optional) The name of the airport to be retrieved.
+                - city: (optional) Filter by city.
+                - country: (optional) Filter by country.
+                - region: (optional) Filter by region.
+                - type: (optional) Filter by airport type.
+                - latitude_min and latitude_max: (optional) Filter by latitude range.
+                - longitude_min and longitude_max: (optional) Filter by longitude range.
+                - elevation_min and elevation_max: (optional) Filter by elevation range.
+                - continent: (optional) Filter by continent.
 
         Returns:
-            Response: List of all airports, or a specific airport.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the 'ident' and/or 'name' parameter is provided and an airport with those values exists:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized representation of the airport.
+                - If the 'ident' and/or 'name' parameter is provided and an airport with those values does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
+                - If no 'ident' or 'name' parameter is provided:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized list of all airports that match the other query parameters.
+
+        Example usage:
+            To get a list of all airports: GET /api/airports/
+            To get a specific airport by ident: GET /api/airports/?ident=KLGA
+            To get a specific airport by name: GET /api/airports/?name=LaGuardia
+            To get a list of airports in New York: GET /api/airports/?city=New York
+            To get a list of airports in the United States: GET /api/airports/?country=US
+            To get a list of airports in North America: GET /api/airports/?continent=NA
+            To get a list of large airports: GET /api/airports/?type=large_airport
+            To get a list of airports in a latitude range: GET /api/airports/?latitude_min=40&latitude_max=45
+            To get a list of airports in a longitude range: GET /api/airports/?longitude_min=-80&longitude_max=-70
+            To get a list of airports in an elevation range: GET /api/airports/?elevation_min=100&elevation_max=200
       tags:
       - api
       security:
@@ -70,11 +104,28 @@ paths:
     get:
       operationId: api_bookings_retrieve
       description: |-
-        Returns a list of all bookings, or a specific booking if a booking_ref is provided.
-        If a booking_ref is provided, it can be provided as a query parameter, or in the request.
+        This API endpoint retrieves a list of all bookings or a specific booking based on the provided booking reference,
+        flight code, or passport number.
+
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - booking_ref: The unique reference of the booking to be retrieved.
+                - flight: The unique code of the flight associated with the booking.
+                - passport_number: The passport number of the passenger.
 
         Returns:
-            Response: List of all bookings, or a specific booking.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If a list of bookings is retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A list of booking objects.
+                - If a specific booking is retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A booking object.
+                - If no bookings are found:
+                    - HTTP status code: 204 (No Content)
+                    - JSON data: A message stating that no bookings are available.
       tags:
       - api
       security:
@@ -91,13 +142,24 @@ paths:
     post:
       operationId: api_bookings_create
       description: |-
-        Creates a new booking.
+        This API endpoint creates a new booking with the provided booking details.
 
-        Args:
-            request (Request): The booking details.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Request body (JSON):
+                - booking_ref: The unique reference of the booking.
+                - flight: The unique code of the flight associated with the booking.
+                - passport_number: The passport number of the passenger.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the booking is created successfully:
+                    - HTTP status code: 201 (Created)
+                    - JSON data: The created booking object.
+                - If the booking already exists or the flight is not found:
+                    - HTTP status code: 400 (Bad Request)
+                    - JSON data: An error message.
       tags:
       - api
       requestBody:
@@ -126,13 +188,22 @@ paths:
     patch:
       operationId: api_bookings_partial_update
       description: |-
-        Modifies a booking.
+        This API endpoint modifies an existing booking based on the provided booking reference.
 
-        Args:
-            request (Request): The booking details.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Request body (JSON):
+                - booking_ref: The unique reference of the booking to be modified.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the booking is modified successfully:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: The modified booking object.
+                - If the booking does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
       tags:
       - api
       requestBody:
@@ -160,13 +231,22 @@ paths:
     delete:
       operationId: api_bookings_destroy
       description: |-
-        Deletes a booking.
+        This API endpoint deletes an existing booking based on the provided booking reference.
 
-        Args:
-            request (Request): The booking reference.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - booking_ref: The unique reference of the booking to be deleted.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the booking is deleted successfully:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A message stating that the booking was deleted.
+                - If the booking or the flight does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
       tags:
       - api
       security:
@@ -180,13 +260,27 @@ paths:
     get:
       operationId: api_cities_retrieve
       description: |-
-        Gets the list of cities.
+        This API endpoint retrieves a list of all cities or specific cities based on the provided city name or country name.
 
-        Args:
-            request (Request): The request object.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - id: The ID of the city to be retrieved.
+                - name: The name of the city to be retrieved.
+                - country: The name of the country whose cities are to be retrieved.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If a list of cities is retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A list of city objects.
+                - If a specific city or cities in a country are retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A city object or a list of city objects.
+                - If no cities are found:
+                    - HTTP status code: 204 (No Content)
+                    - JSON data: A message stating that no cities are available.
       tags:
       - api
       security:
@@ -204,13 +298,26 @@ paths:
     get:
       operationId: api_countries_retrieve
       description: |-
-        Gets the list of countries.
+        This API endpoint retrieves a list of all countries or specific countries based on the provided country name or continent name.
 
-        Args:
-            request (Request): The request object.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - name: The name of the country to be retrieved.
+                - continent: The name of the continent whose countries are to be retrieved.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If a list of countries is retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A list of country objects.
+                - If a specific country or countries in a continent are retrieved:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A country object or a list of country objects.
+                - If no countries are found:
+                    - HTTP status code: 204 (No Content)
+                    - JSON data: A message stating that no countries are available.
       tags:
       - api
       security:
@@ -228,22 +335,42 @@ paths:
     get:
       operationId: api_flights_retrieve
       description: |-
-        Returns a list of all flights, or a specific flight if a flight_code is provided.
-        The flight_code can be provided as a query parameter, or in the request.
+        This API endpoint retrieves a list of all flights or specific flights based on provided parameters.
 
-        Users can filter flights based on query parameters. For example:
-
-        - `/api/flights/?departure_airport=LAX&destination_airport=JFK`
-        - `/api/flights/?airline=AA&base_price_min=100&base_price_max=300`
-        - `/api/flights/?departure_datetime_min=2023-05-01T00:00:00Z&departure_datetime_max=2023-05-31T23:59:59Z`
-        - `/api/flights/?departure_datetime_min=2023-05-09&arrival_datetime_max=2023-05-14`
-
-        The filters allow users to search for flights within a range of values for various parameters
-        such as departure datetime, arrival datetime, duration time, base price, total seats,
-        and available seats. Users can also filter by departure airport, destination airport, and airline.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - flight_code: (optional) The unique code of the flight to be retrieved.
+                - departure_airport: (optional) Filter by departure airport.
+                - destination_airport: (optional) Filter by destination airport.
+                - airline: (optional) Filter by airline.
+                - base_price_min and base_price_max: (optional) Filter by base price range.
+                - departure_datetime_min and departure_datetime_max: (optional) Filter by departure datetime range.
+                - arrival_datetime_min and arrival_datetime_max: (optional) Filter by arrival datetime range.
 
         Returns:
-            Response: List of all flights, or a specific flight.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the 'flight_code' parameter is provided and a flight with that code exists:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized representation of the flight.
+                - If the 'flight_code' parameter is provided and a flight with that code does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
+                - If no 'flight_code' parameter is provided:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A serialized list of all flights that match the other query parameters.
+                - If no flights match the provided parameters:
+                    - HTTP status code: 204 (No Content)
+                    - JSON data: An error message.
+
+        Example usage:
+            To get a list of all flights: GET /api/flights/
+            To get a specific flight by flight_code: GET /api/flights/?flight_code=AA100
+            To get a list of flights from LAX to JFK: GET /api/flights/?departure_airport=LAX&destination_airport=JFK
+            To get a list of flights with a base price between $100 and $300: GET /api/flights/?base_price_min=100&base_price_max=300
+            To get a list of flights with a departure datetime between 2023-05-01T00:00:00Z and 2023-05-31T23:59:59Z: GET /api/flights/?departure_datetime_min=2023-05-01T00:00:00Z&departure_datetime_max=2023-05-31T23:59:59Z
+            To get a list of flights with an arrival datetime between 2023-05-01T00:00:00Z and 2023-05-31T23:59:59Z: GET /api/flights/?arrival_datetime_min=2023-05-01T00:00:00Z&arrival_datetime_max=2023-05-31T23:59:59Z
       tags:
       - api
       security:
@@ -260,14 +387,37 @@ paths:
     post:
       operationId: api_flights_create
       description: |-
-        Creates a new flight.
-        The flight_code can be provided as a query parameter, or in the request.
+        This API endpoint creates a new flight with the provided details.
 
-        Args:
-            request (Request): The flight details.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Body parameters (all required):
+                - flight_code: The unique code of the flight.
+                - departure_airport: The departure airport of the flight.
+                - destination_airport: The destination airport of the flight.
+                - airline: The airline of the flight.
+                - departure_datetime: The departure datetime of the flight.
+                - arrival_datetime: The arrival datetime of the flight.
+                - duration_time: The duration time of the flight.
+                - base_price: The base price of the flight.
+                - total_seats: The total seats available on the flight.
+                - available_seats: The available seats on the flight at the time of creation.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the flight is created successfully:
+                    - HTTP status code: 201 (Created)
+                    - JSON data: A serialized representation of the new flight.
+                - If the flight code already exists:
+                    - HTTP status code: 400 (Bad Request)
+                    - JSON data: An error message.
+                - If the request data is invalid:
+                    - HTTP status code: 400 (Bad Request)
+                    - JSON data: A list of errors detailing what was wrong with the request data.
+
+        Example usage:
+            To create a new flight: POST /api/flights/ with the flight details in the request body.
       tags:
       - api
       requestBody:
@@ -296,14 +446,39 @@ paths:
     patch:
       operationId: api_flights_partial_update
       description: |-
-        Modifies a flight.
-        The flight_code can be provided as a query parameter, or in the request.
+        This API endpoint modifies an existing flight's details with the provided information.
 
-        Args:
-            request (Request): The flight details.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Body parameters (optional):
+                - departure_airport: The departure airport of the flight.
+                - destination_airport: The destination airport of the flight.
+                - airline: The airline of the flight.
+                - departure_datetime: The departure datetime of the flight.
+                - arrival_datetime: The arrival datetime of the flight.
+                - duration_time: The duration time of the flight.
+                - base_price: The base price of the flight.
+                - total_seats: The total seats available on the flight.
+                - available_seats: The available seats on the flight at the time of modification.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the flight is modified successfully:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A message stating that the flight was modified.
+                - If the flight code does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
+                - If the request data is the same as the current flight data:
+                    - HTTP status code: 204 (No Content)
+                    - JSON data: A message stating that no changes were made.
+                - If the request data is invalid:
+                    - HTTP status code: 400 (Bad Request)
+                    - JSON data: A list of errors detailing what was wrong with the request data.
+
+        Example usage:
+            To modify an existing flight: PATCH /api/flights/ with the flight code and the new flight details in the request body.
       tags:
       - api
       requestBody:
@@ -331,14 +506,28 @@ paths:
     delete:
       operationId: api_flights_destroy
       description: |-
-        Deletes a flight.
-        The flight_code can be provided as a query parameter, or in the request.
+        This API endpoint deletes an existing flight based on the provided flight code.
 
-        Args:
-            request (Request): The flight code.
+        Parameters:
+            request (Request): The Django REST framework request object.
+                Query parameters:
+                - flight_code (required): The unique code of the flight to be deleted.
 
         Returns:
-            Response: The response object.
+            Response: A Django REST framework response object.
+                Response data format:
+                - If the flight is deleted successfully:
+                    - HTTP status code: 200 (OK)
+                    - JSON data: A message stating that the flight was deleted.
+                - If the flight code does not exist:
+                    - HTTP status code: 404 (Not Found)
+                    - JSON data: An error message.
+                - If the flight code is not provided:
+                    - HTTP status code: 400 (Bad Request)
+                    - JSON data: An error message indicating that the flight code is required.
+
+        Example usage:
+            To delete a flight: DELETE /api/flights/?flight_code=FLIGHT123
       tags:
       - api
       security:

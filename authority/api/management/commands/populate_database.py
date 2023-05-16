@@ -6,9 +6,10 @@ import random
 from datetime import datetime, timedelta
 
 import django
-from api.models import City, Country, Airport, Airline, Flight, Booking
 from django.core.management.base import BaseCommand
 from django.utils.timezone import make_aware
+
+from api.models import City, Country, Airport, Airline, Flight, Booking
 
 # Set seed for random
 random.seed(42)
