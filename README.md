@@ -119,14 +119,16 @@ See the `views.py` file for more information on the filters used.
 
 ## Other Diagrams
 
-Below are some other diagrams that were created during the development of this service.
+Below are some other diagrams that were created during the development of this service. They have been created using PyCharm's built-in diagramming tool.
 
-The UML diagram was created using PyCharm.
+### UML
 
 ![UML](docs/uml.png)
 
-The follo
+### Classes
 
 ![Classes](docs/classes.png)
+
+### Packages
 
 ![Packages](docs/packages.png)
