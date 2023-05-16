@@ -1,0 +1,679 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/airlines/:
+    get:
+      operationId: api_airlines_retrieve
+      description: |-
+        Returns a list of all airlines.
+        If the airline_code parameter is provided, returns the airline with the
+        specified code.
+        If query parameters are provided, returns a list of airlines that match
+        the query parameters.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airline'
+          description: ''
+  /api/airports/:
+    get:
+      operationId: api_airports_retrieve
+      description: |-
+        Returns a list of all airports, or a specific airport if an ident is provided.
+        The ident can be provided as a query parameter, or in the request.
+
+        Users can filter airports based on query parameters. For example:
+
+        - `/api/airports/?city=New York`
+        - `/api/airports/?country=US`
+        - `/api/airports/?region=US-NY`
+        - `/api/airports/?type=large_airport`
+        - `/api/airports/?latitude_min=40&latitude_max=45`
+        - `/api/airports/?longitude_min=-80&longitude_max=-70`
+        - `/api/airports/?elevation_min=100&elevation_max=200`
+        - `/api/airports/?continent=NA`
+
+        Note that the filtering is case-insensitive and uses the icontains lookup expression for text-based fields, which means it will match any airport containing the specified text. You can change the lookup expression to suit your needs.
+
+        Returns:
+            Response: List of all airports, or a specific airport.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Airport'
+          description: ''
+  /api/bookings/:
+    get:
+      operationId: api_bookings_retrieve
+      description: |-
+        Returns a list of all bookings, or a specific booking if a booking_ref is provided.
+        If a booking_ref is provided, it can be provided as a query parameter, or in the request.
+
+        Returns:
+            Response: List of all bookings, or a specific booking.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+    post:
+      operationId: api_bookings_create
+      description: |-
+        Creates a new booking.
+
+        Args:
+            request (Request): The booking details.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Booking'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Booking'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+    patch:
+      operationId: api_bookings_partial_update
+      description: |-
+        Modifies a booking.
+
+        Args:
+            request (Request): The booking details.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBooking'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBooking'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBooking'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+          description: ''
+    delete:
+      operationId: api_bookings_destroy
+      description: |-
+        Deletes a booking.
+
+        Args:
+            request (Request): The booking reference.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/cities/:
+    get:
+      operationId: api_cities_retrieve
+      description: |-
+        Gets the list of cities.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/City'
+          description: ''
+  /api/countries/:
+    get:
+      operationId: api_countries_retrieve
+      description: |-
+        Gets the list of countries.
+
+        Args:
+            request (Request): The request object.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Country'
+          description: ''
+  /api/flights/:
+    get:
+      operationId: api_flights_retrieve
+      description: |-
+        Returns a list of all flights, or a specific flight if a flight_code is provided.
+        The flight_code can be provided as a query parameter, or in the request.
+
+        Users can filter flights based on query parameters. For example:
+
+        - `/api/flights/?departure_airport=LAX&destination_airport=JFK`
+        - `/api/flights/?airline=AA&base_price_min=100&base_price_max=300`
+        - `/api/flights/?departure_datetime_min=2023-05-01T00:00:00Z&departure_datetime_max=2023-05-31T23:59:59Z`
+        - `/api/flights/?departure_datetime_min=2023-05-09&arrival_datetime_max=2023-05-14`
+
+        The filters allow users to search for flights within a range of values for various parameters
+        such as departure datetime, arrival datetime, duration time, base price, total seats,
+        and available seats. Users can also filter by departure airport, destination airport, and airline.
+
+        Returns:
+            Response: List of all flights, or a specific flight.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+          description: ''
+    post:
+      operationId: api_flights_create
+      description: |-
+        Creates a new flight.
+        The flight_code can be provided as a query parameter, or in the request.
+
+        Args:
+            request (Request): The flight details.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Flight'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Flight'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Flight'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+          description: ''
+    patch:
+      operationId: api_flights_partial_update
+      description: |-
+        Modifies a flight.
+        The flight_code can be provided as a query parameter, or in the request.
+
+        Args:
+            request (Request): The flight details.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFlight'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedFlight'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedFlight'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+          description: ''
+    delete:
+      operationId: api_flights_destroy
+      description: |-
+        Deletes a flight.
+        The flight_code can be provided as a query parameter, or in the request.
+
+        Args:
+            request (Request): The flight code.
+
+        Returns:
+            Response: The response object.
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    Airline:
+      type: object
+      description: Serializes the Airline model.
+      properties:
+        code:
+          type: string
+          maxLength: 3
+        name:
+          type: string
+          maxLength: 100
+        ip:
+          type: string
+          maxLength: 100
+      required:
+      - code
+      - ip
+      - name
+    Airport:
+      type: object
+      description: Serializes the Airport model.
+      properties:
+        ident:
+          type: string
+          maxLength: 100
+        name:
+          type: string
+          maxLength: 100
+        region:
+          type: string
+          maxLength: 100
+        size_type:
+          type: string
+          maxLength: 100
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        elevation:
+          type: string
+          maxLength: 100
+        city:
+          type: integer
+      required:
+      - city
+      - elevation
+      - ident
+      - latitude
+      - longitude
+      - name
+      - region
+      - size_type
+    Booking:
+      type: object
+      description: Serializes the Booking model.
+      properties:
+        booking_ref:
+          type: string
+          readOnly: true
+        flight:
+          type: string
+        passport_number:
+          type: integer
+      required:
+      - booking_ref
+      - flight
+      - passport_number
+    City:
+      type: object
+      description: Serializes the City model.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        country:
+          type: string
+      required:
+      - country
+      - id
+      - name
+    Country:
+      type: object
+      description: Serializes the Country model.
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        continent:
+          type: string
+          maxLength: 255
+      required:
+      - continent
+      - name
+    Flight:
+      type: object
+      description: Serializes the Flight model.
+      properties:
+        flight_code:
+          type: string
+          maxLength: 10
+        departure_datetime:
+          type: string
+          format: date-time
+        arrival_datetime:
+          type: string
+          format: date-time
+        duration_time:
+          type: string
+        base_price:
+          type: number
+          format: double
+        total_seats:
+          type: integer
+        available_seats:
+          type: integer
+        departure_airport:
+          type: string
+        destination_airport:
+          type: string
+        airline:
+          type: string
+      required:
+      - airline
+      - arrival_datetime
+      - available_seats
+      - base_price
+      - departure_airport
+      - departure_datetime
+      - destination_airport
+      - duration_time
+      - flight_code
+      - total_seats
+    PatchedBooking:
+      type: object
+      description: Serializes the Booking model.
+      properties:
+        booking_ref:
+          type: string
+          readOnly: true
+        flight:
+          type: string
+        passport_number:
+          type: integer
+    PatchedFlight:
+      type: object
+      description: Serializes the Flight model.
+      properties:
+        flight_code:
+          type: string
+          maxLength: 10
+        departure_datetime:
+          type: string
+          format: date-time
+        arrival_datetime:
+          type: string
+          format: date-time
+        duration_time:
+          type: string
+        base_price:
+          type: number
+          format: double
+        total_seats:
+          type: integer
+        available_seats:
+          type: integer
+        departure_airport:
+          type: string
+        destination_airport:
+          type: string
+        airline:
+          type: string
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

@@ -1,0 +1,128 @@
+\RequirePackage[dvipsnames]{xcolor}
+\documentclass[tikz, border=1in]{standalone}
+\usepackage{tikz-uml}
+\usetikzlibrary{matrix}
+
+\title{Airline API Diagram}
+\author{Wassim Benimoussa}
+\author{Omar Choudhry}
+\date{May 2023}
+
+\begin{document}
+
+\begin{tikzpicture}
+
+\begin{umlpackage}[x=17,y=-13, fill=Green!50]{Airline}
+\umlbasiccomponent[y=-4, width=3cm, fill=blue!15]{postFlight}
+\umlbasiccomponent[y=-6, width=3cm, fill=blue!15]{deleteFlight}
+\umlbasiccomponent[width=3cm, fill=yellow!40]{CreateBookingAirline}
+\umlbasiccomponent[y=-2, width=3cm, fill=red!40]{DeleteBookingAirline}
+\end{umlpackage}
+
+\begin{umlpackage}[fill=Bittersweet!50, x=3, y=-11]{FlightAggregator}
+\umlbasiccomponent[width=3cm, fill=blue!15]{getFlights}
+\umlbasiccomponent[y=-2, width=3cm, fill=blue!15]{createBooking}
+\umlbasiccomponent[y=-4, width=3cm, fill=blue!15]{deleteBooking}
+\end{umlpackage}
+
+\begin{umlpackage}[x=10, y=-11, fill=Red!60]{Aviation Authority}
+\umlbasiccomponent[width=3cm, fill=green!20]{GetFlights}
+\umlbasiccomponent[y=-6, width=3cm, fill=yellow!40]{ReceiveFlight}
+\umlbasiccomponent[y=-8, width=3cm, fill=red!40]{DeleteFlight}
+\umlbasiccomponent[y=-2,width=3cm, fill=yellow!40]{CreateBookingAuthority}
+\umlbasiccomponent[y=-4,width=3cm, fill=red!40]{DeleteBookingAuthority}
+\end{umlpackage}
+
+\umlassemblyconnector[interface=POST, with port, name=MakeBookings]{createBooking}{CreateBookingAuthority}
+\umlassemblyconnector[interface=DELETE, with port, name=DeleteFlight]{deleteFlight}{DeleteFlight}
+\umlassemblyconnector[interface=POST, with port, name=CancelBookingsagg]{deleteBooking}{DeleteBookingAuthority}
+\umlassemblyconnector[interface=POST, with port, name=RequestFlights]{postFlight}{ReceiveFlight}
+\umlassemblyconnector[interface=POST, with port, name=RequestBookings]{CreateBookingAuthority}{CreateBookingAirline}
+\umlassemblyconnector[interface=GET, with port, name=RequestFlightsagg]{getFlights}{GetFlights}
+\umlassemblyconnector[interface=DELETE, with port, name=DeleteBookingair]{DeleteBookingAuthority}{DeleteBookingAirline}
+
+\umlnote[x=12.15, y=-7, width=4cm, fill=red!40]{DeleteBookingair-interface}{
+\textbf{REQUEST} \\
+BookingRef: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string}
+
+\umlnote[x=16.5, y=-23.5, width=5cm, fill=yellow!40]{RequestFlights-interface}{
+\textbf{REQUEST} \\
+FlightCode: CharField \\
+DepartureDateTime: DateTime \\
+ArrivalDateTime: DateTime \\
+DurationTime: Duration \\
+BasePrice: uint \\
+TotalSeats: uint \\
+AvailableSeats: uint \\
+AirlineName: CharField \\
+DepartureAirport: CharField\\
+DestinationAirport: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string
+}
+
+\umlnote[x=16.6, y=-8.65, width=4cm, fill=yellow!40]{RequestBookings-interface}{
+\textbf{REQUEST} \\
+PassportNumber: uint \\
+BookingRef: CharField \\
+FlightCode: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string
+}
+
+\umlnote[x=11.5, y=-21.8, width=4cm, fill=red!40]{DeleteFlight-interface}{
+\textbf{REQUEST} \\
+FlightCode: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string
+}
+
+\umlnote[x=7.5, y=-7.25, width=4cm, fill=green!20]{RequestFlightsagg-interface}{
+\textbf{RESPONSE} \\
+ListofFlights: JSON \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string
+}
+
+\umlnote[x=3, y=-6.5, width=4cm, fill=yellow!40]{MakeBookings-interface}{
+\textbf{REQUEST} \\
+PassportNumber: uint \\
+FlightCode: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+BookingRef: CharField \\
+ErrorCode: uint \\
+Comment: string
+}
+
+\umlnote[x=5.2, y=-17.8, width=4cm, fill=yellow!40]{CancelBookingsagg-interface}{
+\textbf{REQUEST} \\
+BookingRef: CharField \break \\
+\textbf{RESPONSE} \\
+Status: uint \\
+ErrorCode: uint \\
+Comment: string
+}
+
+% Add legend
+\matrix[matrix of nodes, draw, column sep=1em, row sep=0.2em, inner sep=0.2em, nodes={anchor=west}] at (6, -23) {
+  \textcolor{blue!15}{\textbullet} & Function \\
+  \textcolor{green!20}{\textbullet} & GET \\
+  \textcolor{yellow!40}{\textbullet} & POST \\
+  \textcolor{red!40}{\textbullet} & DELETE \\
+};
+
+\end{tikzpicture}
+
+\end{document}
